@@ -4,7 +4,6 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.saicone.ezlib.Dependencies;
 import com.saicone.ezlib.Dependency;
 import com.saicone.ezlib.EzlibLoader;
-import com.saicone.ezlib.Repository;
 import icu.yogurt.chatreport.commands.ReportCommand;
 import icu.yogurt.chatreport.listeners.PlayerChatListener;
 import icu.yogurt.chatreport.listeners.PlayerJoinListener;
@@ -34,8 +33,8 @@ import java.util.stream.Collectors;
 @Dependencies(
         value = {
                 // Jedis
-                @Dependency(value = "redis.clients:jedis:4.3.0", repository = @Repository()),
-                @Dependency(value = "org.slf4j:slf4j-nop:1.7.36", repository = @Repository()), // For slf4j-api
+                @Dependency(value = "redis.clients:jedis:4.3.0"),
+                @Dependency(value = "org.slf4j:slf4j-nop:1.7.36"), // For slf4j-api
                 // Simple YAML
                 @Dependency(value = "me.carleslc.Simple-YAML:Simple-Yaml:1.8.4",
                         relocate = {"org.simpleyaml", "{package}.libs.yaml"})
