@@ -1,0 +1,123 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>icu.yogurt</groupId>
+        <artifactId>ChatReport</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>bungee</artifactId>
+    <packaging>jar</packaging>
+
+    <name>bungee</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.19-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>icu.yogurt</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.proxiodev.redisbungee</groupId>
+            <artifactId>RedisBungee-Bungee</artifactId>
+            <version>0.10.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Use ezlib -->
+        <dependency>
+            <groupId>com.saicone.ezlib</groupId>
+            <artifactId>ezlib</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Use ezlib loader -->
+        <dependency>
+            <groupId>com.saicone.ezlib</groupId>
+            <artifactId>loader</artifactId>
+            <version>1.2</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Use annotations -->
+        <dependency>
+            <groupId>com.saicone.ezlib</groupId>
+            <artifactId>annotations</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>PandoraCRP</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <artifactSet>
+                        <includes>
+                            <include>com.saicone.ezlib:ezlib</include>
+                            <include>com.saicone.ezlib:loader</include>
+                            <include>icu.yogurt:common</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.saicone.ezlib</pattern>
+                            <shadedPattern>${project.groupId}.ezlib</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>icu.yogurt.common</pattern>
+                            <shadedPattern>${project.groupId}.common</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.simpleyaml</pattern>
+                            <shadedPattern>${project.groupId}.libs.yaml</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>redis.clients.jedis</pattern>
+                            <shadedPattern>${project.groupId}.libs.jedis</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>

@@ -1,0 +1,5 @@
+name: ChatReport
+author: AndriusPE
+version: '${project.version}'
+main: icu.yogurt.chatreport.ChatReport
+description: The best chat report

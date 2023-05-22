@@ -1,0 +1,44 @@
+
+use-redis-bungee: false #For autocomplete nicks in /chatreport command
+command:
+  name: "chatreport"
+  permission: "pandora.chatreport"
+  aliases:
+    - "crp"
+api:
+  host: "http://127.0.0.1:8080"
+  key: ""
+storage:
+  type: REDIS #YAML | REDIS | DISABLED
+  ssl: false
+  host: "redis-17141.c11.us-east-1-3.ec2.cloud.redislabs.com"
+  port: 17141
+  database-index: 0
+  password: "Xq9fod91ryOAMprlgipJt3xc79H2W7m5"
+
+messages:
+  save-commands: true
+  commands:
+    - "msg"
+    - "m"
+    - "r"
+    - "reply"
+punishment:
+  # Turn auto punisher on or off
+  enabled: true
+  commands:
+    # if the punishment does not have a report id | If the punishment has a report id
+    BAN: ["ban -s %target% %reason% %time%", "ban -s %target% %reason% ID:#%id% %time%"]
+    UN_BAN: ["unban -s %target% %reason%"]
+    MUTE: ["mute -s %target% %reason% %time%", "mute -s %target% %reason% ID:#%id% %time%"]
+
+  units:
+    DAYS: "d"
+    HOURS: "h"
+    MINUTES: "m"
+    SECONDS: "s"
+
+lang:
+  correct-usage: "&cCorrect usage: /chatreport (playerName)"
+  player-does-not-exist: "&cWe couldn't find the player in our database."
+  success-report: "&aYou have sent the report successfully."
