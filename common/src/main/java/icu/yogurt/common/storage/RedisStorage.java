@@ -7,6 +7,8 @@ import icu.yogurt.common.interfaces.Storage;
 import icu.yogurt.common.model.Message;
 import lombok.SneakyThrows;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -48,9 +50,9 @@ public class RedisStorage implements Storage {
     }
 
     @Override
-    public void saveMessage(String player, Message message) {
+    public void saveMessage(Message message) {
         String json = gson.toJson(message);
-        String key = REDIS_KEY + player;
+        String key = REDIS_KEY + message.getSender();
 
         addMessage(key, json);
     }
@@ -114,6 +116,7 @@ public class RedisStorage implements Storage {
             }
 
             // Add the message as a new field to the hash
+            jedis.lpos(key,  value);
             jedis.hset(key, "message:" + System.currentTimeMillis(), value);
 
             // Set the key to expire in 24 hours
@@ -126,4 +129,52 @@ public class RedisStorage implements Storage {
         }
     }
 
+    @Override
+    public void saveMessages(List<Message> messages) {
+        try (Jedis jedis = getRedisConnector().getResource()) {
+            Transaction transaction = jedis.multi();
+            Map<String, Response<Long>> lengthMap = new HashMap<>();
+
+            for (int i = 0; i < messages.size(); i++) {
+                Message message = messages.get(i);
+                String sender = message.getSender();
+                String json = gson.toJson(message);
+                String key = REDIS_KEY + sender;
+
+                // Agregar el mensaje como un nuevo campo en el hash
+                transaction.rpush(key, json);
+
+                // Establecer el tiempo de expiración en 24 horas
+                transaction.expire(key, 24 * 60 * 60);
+                // Obtener la longitud de la lista (se agregará a la transacción)
+                Response<Long> length = transaction.llen(key);
+
+                lengthMap.put(sender, length);
+            }
+
+            // Ejecutar la transacción y obtener los resultados
+            List<Object> results = transaction.exec();
+
+            System.out.println("results size = " + results.size());
+            System.out.println("messages size = " + messages.size());
+
+            // Obtener el valor de la longitud de la lista para cada mensaje
+            for (Message message : messages) {
+                String sender = message.getSender();
+                Response<Long> lengthResponse = lengthMap.get(sender);
+
+                if (lengthResponse != null) {
+                    long length = lengthResponse.get();
+
+                    if (length > 25) {
+                        // Eliminar los elementos más antiguos, dejando solo los últimos 25
+                        jedis.ltrim(REDIS_KEY + sender, length - 25, -1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            plugin.log(1, "Failed to save messages to Redis: " + e.getMessage());
+        }
+    }
 }

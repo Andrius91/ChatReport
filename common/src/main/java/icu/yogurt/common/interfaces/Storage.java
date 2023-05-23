@@ -18,7 +18,9 @@ public interface Storage {
      *
      * @param message message
      */
-    void saveMessage(String player, Message message);
+    void saveMessage(Message message);
+    void saveMessages(List<Message> messages);
+
 
     /**
      *

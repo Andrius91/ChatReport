@@ -25,8 +25,9 @@ public class YamlStorage implements Storage {
     }
 
     @Override
-    public void saveMessage(String player, Message message) {
+    public void saveMessage(Message message) {
 
+        String player = message.getSender();
         YamlFile config = Config.getPlayerConfig(player);
 
         List<Map<String, Object>> messages = getMessages(player)
@@ -43,6 +44,11 @@ public class YamlStorage implements Storage {
         config.set("messages", messages);
 
         Config.reloadPlayerConfig(player);
+    }
+
+    @Override
+    public void saveMessages(List<Message> messages) {
+
     }
 
     private Map<String, Object> messageToMap(Message message) {

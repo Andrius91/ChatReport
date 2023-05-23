@@ -11,18 +11,13 @@
     <packaging>jar</packaging>
 
     <name>bungee</name>
-    <url>http://maven.apache.org</url>
+    <url>https://maven.apache.org</url>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <repositories>
-        <repository>
-            <id>bungeecord-repo</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </repository>
-    </repositories>
+
 
     <dependencies>
         <dependency>
@@ -35,7 +30,6 @@
             <groupId>icu.yogurt</groupId>
             <artifactId>common</artifactId>
             <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.github.proxiodev.redisbungee</groupId>
@@ -43,30 +37,8 @@
             <version>0.10.1</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Use ezlib -->
-        <dependency>
-            <groupId>com.saicone.ezlib</groupId>
-            <artifactId>ezlib</artifactId>
-            <version>1.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Use ezlib loader -->
-        <dependency>
-            <groupId>com.saicone.ezlib</groupId>
-            <artifactId>loader</artifactId>
-            <version>1.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- Use annotations -->
-        <dependency>
-            <groupId>com.saicone.ezlib</groupId>
-            <artifactId>annotations</artifactId>
-            <version>1.2</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
     <build>
-        <finalName>PandoraCRP</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -77,38 +49,10 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.3.0</version>
-                <configuration>
-                    <artifactSet>
-                        <includes>
-                            <include>com.saicone.ezlib:ezlib</include>
-                            <include>com.saicone.ezlib:loader</include>
-                            <include>icu.yogurt:common</include>
-                        </includes>
-                    </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>com.saicone.ezlib</pattern>
-                            <shadedPattern>${project.groupId}.ezlib</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>icu.yogurt.common</pattern>
-                            <shadedPattern>${project.groupId}.common</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.simpleyaml</pattern>
-                            <shadedPattern>${project.groupId}.libs.yaml</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>redis.clients.jedis</pattern>
-                            <shadedPattern>${project.groupId}.libs.jedis</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

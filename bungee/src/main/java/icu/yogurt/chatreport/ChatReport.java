@@ -1,9 +1,6 @@
 package icu.yogurt.chatreport;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
-import com.saicone.ezlib.Dependencies;
-import com.saicone.ezlib.Dependency;
-import com.saicone.ezlib.EzlibLoader;
 import icu.yogurt.chatreport.commands.ReportCommand;
 import icu.yogurt.chatreport.listeners.PlayerChatListener;
 import icu.yogurt.chatreport.listeners.PlayerJoinListener;
@@ -16,7 +13,6 @@ import icu.yogurt.common.interfaces.Storage;
 import icu.yogurt.common.model.CRCommand;
 import icu.yogurt.common.storage.RedisStorage;
 import icu.yogurt.common.storage.YamlStorage;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -30,25 +26,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-@Dependencies(
-        value = {
-                // Jedis
-                @Dependency(value = "redis.clients:jedis:4.3.0"),
-                @Dependency(value = "org.slf4j:slf4j-nop:1.7.36"), // For slf4j-api
-                // Simple YAML
-                @Dependency(value = "me.carleslc.Simple-YAML:Simple-Yaml:1.8.4",
-                        relocate = {"org.simpleyaml", "{package}.libs.yaml"})
-        },
-        relocations = {
-                // Jedis
-                "redis.clients.jedis", "{package}.libs.jedis",
-                "com.google.gson", "{package}.libs.gson",
-                "org.apache.commons.pool2", "{package}.libs.commons.pool2",
-                "org.json", "{package}.libs.json",
-                "org.slf4j", "{package}.libs.slf4j"
-        }
-)
-@Getter
 public final class ChatReport extends Plugin implements IChatReport{
 
     private RedisConnector redisConnector;
@@ -60,7 +37,6 @@ public final class ChatReport extends Plugin implements IChatReport{
 
     @Override
     public void onLoad() {
-        new EzlibLoader().replace("{package}", "icu.yogurt").load();
         scheduler = ProxyServer.getInstance().getScheduler();
         loadConfigs();
 
@@ -195,6 +171,20 @@ public final class ChatReport extends Plugin implements IChatReport{
                 getLogger().log(Level.INFO, message);
                 break;
         }
+    }
+
+    @Override
+    public Storage getStorage() {
+        return storage;
+    }
+
+    @Override
+    public API getApi() {
+        return api;
+    }
+
+    public YamlFile getConfig(){
+        return config;
     }
 
 }
