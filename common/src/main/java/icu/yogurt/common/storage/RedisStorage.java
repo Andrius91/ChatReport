@@ -106,21 +106,20 @@ public class RedisStorage implements Storage {
     private void addMessage(String key, String value){
         try (Jedis jedis = getRedisConnector().getResource()) {
             // Delete the oldest field if the hash already has 10 fields
-            long fieldCount = jedis.hlen(key);
+            long fieldCount = jedis.llen(key);
             int MAX_MESSAGES = 25;
             if (fieldCount >= MAX_MESSAGES) {
-                jedis.hkeys(key).stream()
+                jedis.lrange(key, 0, 0).stream()
                         .sorted()
                         .findFirst()
-                        .ifPresent(oldestField -> jedis.hdel(key, oldestField));
+                        .ifPresent(oldestElement -> jedis.lrem(key, 0, oldestElement));
             }
 
             // Add the message as a new field to the hash
-            jedis.lpos(key,  value);
-            jedis.hset(key, "message:" + System.currentTimeMillis(), value);
+            jedis.rpush(key, value);
 
             // Set the key to expire in 24 hours
-            jedis.expire(key, 24 * 60 * 60);
+            jedis.expire(key, 120);
 
 
         } catch (Exception e) {
@@ -135,8 +134,7 @@ public class RedisStorage implements Storage {
             Transaction transaction = jedis.multi();
             Map<String, Response<Long>> lengthMap = new HashMap<>();
 
-            for (int i = 0; i < messages.size(); i++) {
-                Message message = messages.get(i);
+            for (Message message : messages) {
                 String sender = message.getSender();
                 String json = gson.toJson(message);
                 String key = REDIS_KEY + sender;
@@ -145,7 +143,9 @@ public class RedisStorage implements Storage {
                 transaction.rpush(key, json);
 
                 // Establecer el tiempo de expiración en 24 horas
-                transaction.expire(key, 24 * 60 * 60);
+                //transaction.expire(key, 24 * 60 * 60);
+                transaction.expire(key, 120);
+
                 // Obtener la longitud de la lista (se agregará a la transacción)
                 Response<Long> length = transaction.llen(key);
 
