@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import icu.yogurt.common.connector.RedisConnector;
 import icu.yogurt.common.interfaces.IChatReport;
 import icu.yogurt.common.interfaces.Storage;
+import icu.yogurt.common.listener.StaffListener;
 import icu.yogurt.common.model.Message;
 import lombok.SneakyThrows;
 import redis.clients.jedis.Jedis;
@@ -27,6 +28,7 @@ public class RedisStorage implements Storage {
         this.plugin = plugin;
         this.redisConnector = redisConnector;
         this.redisConnector.connect();
+        plugin.runAsync(() -> redisConnector.getResource().subscribe(new StaffListener(plugin), "pandora:staff"));
     }
 
     private synchronized RedisConnector getRedisConnector() {
@@ -153,10 +155,7 @@ public class RedisStorage implements Storage {
             }
 
             // Ejecutar la transacción y obtener los resultados
-            List<Object> results = transaction.exec();
-
-            System.out.println("results size = " + results.size());
-            System.out.println("messages size = " + messages.size());
+            transaction.exec();
 
             // Obtener el valor de la longitud de la lista para cada mensaje
             for (Message message : messages) {

@@ -96,7 +96,6 @@ public class PunishmentTask implements Runnable {
         replacePlaceholder(sb, "%staff_uuid%", staffUuid);
         replacePlaceholder(sb, "%id%", id);
 
-        System.out.println("staffUuid = " + staffUuid);
         return sb.toString();
     }
 

@@ -1,6 +1,9 @@
 package icu.yogurt.chatreport;
 
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
+import com.saicone.ezlib.Dependencies;
+import com.saicone.ezlib.Dependency;
+import com.saicone.ezlib.EzlibLoader;
 import icu.yogurt.chatreport.commands.ReportCommand;
 import icu.yogurt.chatreport.listeners.PlayerChatListener;
 import icu.yogurt.chatreport.listeners.PlayerJoinListener;
@@ -21,11 +24,33 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.scheduler.TaskScheduler;
 import org.simpleyaml.configuration.file.YamlFile;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
+@Dependencies(
+        value = {
+                // Jedis
+                @Dependency(value = "redis.clients:jedis:4.3.0"),
+                @Dependency(value = "org.slf4j:slf4j-nop:1.7.36"), // For slf4j-api
+                // Simple YAML
+                @Dependency(value = "me.carleslc.Simple-YAML:Simple-Yaml:1.8.4",
+                        relocate = {"org.simpleyaml", "{package}.libs.yaml"}),
+                @Dependency(value = "com.squareup.okhttp3:okhttp:4.2.2", relocate = {
+                        "com.squareup", "{package}.libs.okhttp3"
+                })
+        },
+        relocations = {
+                // Jedis
+                "redis.clients.jedis", "{package}.libs.jedis",
+                "com.google.gson", "{package}.libs.gson",
+                "org.apache.commons.pool2", "{package}.libs.commons.pool2",
+                "org.json", "{package}.libs.json",
+                "org.slf4j", "{package}.libs.slf4j"
+        }
+)
 public final class ChatReport extends Plugin implements IChatReport{
 
     private RedisConnector redisConnector;
@@ -35,8 +60,15 @@ public final class ChatReport extends Plugin implements IChatReport{
 
     private API api;
 
+    private boolean isDebug = false;
+
     @Override
     public void onLoad() {
+        EzlibLoader loader = new EzlibLoader(new File(getDataFolder(), "libs"));
+
+        loader.replace("{package}", "icu.yogurt");
+        loader.load();
+
         scheduler = ProxyServer.getInstance().getScheduler();
         loadConfigs();
 
@@ -50,9 +82,6 @@ public final class ChatReport extends Plugin implements IChatReport{
                 int database_index = config.getInt("storage.database-index");
                 redisConnector = new RedisConnector(hostname, port, database_index, ssl, password);
                 storage = new RedisStorage(this, redisConnector);
-
-                log(1, "redisConnector = " + redisConnector.getResource().isConnected());
-                //redisConnector.getResource().subscribe(new StaffListener(this), "pandora:staff");
             }else{
                 storage = new YamlStorage();
             }
@@ -64,6 +93,7 @@ public final class ChatReport extends Plugin implements IChatReport{
         // Plugin startup logic
         String api_host = getConfig().getString("api.host");
         String api_key = getConfig().getString("api.key");
+        isDebug = getConfig().getBoolean("debug");
         boolean auto_punisher = getConfig().getBoolean("punishment.enabled");
 
         if(!api_host.isEmpty() && !api_key.isEmpty()){
@@ -166,6 +196,11 @@ public final class ChatReport extends Plugin implements IChatReport{
                 break;
             case 2:
                 getLogger().log(Level.WARNING, message);
+                break;
+            case 3:
+                if(isDebug){
+                    getLogger().log(Level.INFO, message);
+                }
                 break;
             default:
                 getLogger().log(Level.INFO, message);

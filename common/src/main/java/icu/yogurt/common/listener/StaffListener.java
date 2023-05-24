@@ -8,6 +8,7 @@ import redis.clients.jedis.JedisPubSub;
 public class StaffListener extends JedisPubSub {
     private final IChatReport plugin;
 
+
     @Override
     public void onMessage(String channel, String message) {
         // Get username and UUID from message
@@ -17,7 +18,5 @@ public class StaffListener extends JedisPubSub {
 
         // Update the local map with the updated UUID
         plugin.getStorage().getStaffMap().put(username, uuid);
-
-        System.out.println("map = " + plugin.getStorage().getStaffMap());
     }
 }

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import icu.yogurt.chatreport.ChatReport;
 import icu.yogurt.chatreport.utils.PlayerUtils;
 import icu.yogurt.common.model.CRCommand;
-import icu.yogurt.common.model.Message;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -82,11 +81,5 @@ public class ReportCommand extends Command implements TabExecutor {
         return matches;
     }
 
-    private void initTest(){
-        for(int i = 0; i < 100; i++){
-            Message message = new Message("Hola"+i, "Lobby", "AndriusPE", Message.nowDate());
-            plugin.getStorage().saveMessage(message);
-        }
-    }
 }
 

@@ -27,8 +27,6 @@ public class PlayerChatListener implements Listener {
     }
 
 
-
-
     @EventHandler(priority = EventPriority.LOWEST)
     public void onChat(ChatEvent e) {
         ProxiedPlayer player = (ProxiedPlayer) e.getSender();
@@ -48,16 +46,12 @@ public class PlayerChatListener implements Listener {
 
         executorService.submit(() -> {
             long startTime = System.currentTimeMillis();
-
-            for(int i= 0; i< 500; i++){
-                Message message = new Message(playerMessage, server, playerName, Message.nowDate());
-                plugin.getStorage().saveMessage(message);
-            }
-
+             Message message = new Message(playerMessage, server, playerName, Message.nowDate());
+             plugin.getStorage().saveMessage(message);
             long endTime = System.currentTimeMillis();
             long elapsedTime = endTime - startTime;
-            System.out.println("500 mensajes guardados en " + elapsedTime + " ms");
 
+            plugin.log(3, "(" + playerName + ":" +  playerMessage + ") saved in "+ elapsedTime + "ms");
         });
     }
 }

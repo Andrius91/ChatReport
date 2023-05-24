@@ -43,9 +43,9 @@ public class PlayerJoinListener implements Listener {
             }
 
             if(isStaff){
-                String uuid = plugin.getStorage().getStaffUUID(playerName);
+                String uuid = storage.getStaffUUID(playerName);
                 if(!currentUUID.equals(uuid)){
-                    plugin.getStorage().updateStaffUUID(playerName, currentUUID);
+                    storage.updateStaffUUID(playerName, currentUUID);
                 }
             }
         });

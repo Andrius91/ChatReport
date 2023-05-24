@@ -1,4 +1,4 @@
-
+debug: false
 use-redis-bungee: false #For autocomplete nicks in /chatreport command
 command:
   name: "chatreport"
