@@ -16,6 +16,8 @@ import icu.yogurt.common.interfaces.Storage;
 import icu.yogurt.common.model.CRCommand;
 import icu.yogurt.common.storage.RedisStorage;
 import icu.yogurt.common.storage.YamlStorage;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -51,6 +53,7 @@ import java.util.stream.Collectors;
                 "org.slf4j", "{package}.libs.slf4j"
         }
 )
+@Getter
 public final class ChatReport extends Plugin implements IChatReport{
 
     private RedisConnector redisConnector;
@@ -60,6 +63,7 @@ public final class ChatReport extends Plugin implements IChatReport{
 
     private API api;
 
+    @Setter
     private boolean isDebug = false;
 
     @Override
@@ -75,12 +79,8 @@ public final class ChatReport extends Plugin implements IChatReport{
         runAsync(() -> {
             String storage_type = config.getString("storage.type");
             if(storage_type.equalsIgnoreCase("REDIS")){
-                String hostname = config.getString("storage.host");
-                String password = config.getString("storage.password");
-                boolean ssl = config.getBoolean("storage.ssl");
-                int port = config.getInt("storage.port");
-                int database_index = config.getInt("storage.database-index");
-                redisConnector = new RedisConnector(hostname, port, database_index, ssl, password);
+                String url = config.getString("storage.url");
+                redisConnector = new RedisConnector(url);
                 storage = new RedisStorage(this, redisConnector);
             }else{
                 storage = new YamlStorage();

@@ -13,11 +13,7 @@ import redis.clients.jedis.JedisPoolConfig;
 public class RedisConnector implements AutoCloseable{
 
     private JedisPool jedisPool;
-    private final String hostname;
-    private final int port;
-    private final int index;
-    private final boolean ssl;
-    private final String password;
+    private final String url;
 
     public void connect() {
         if (jedisPool == null) {
@@ -27,7 +23,7 @@ public class RedisConnector implements AutoCloseable{
             poolConfig.setMinIdle(8);
             poolConfig.setTestOnBorrow(true);
             poolConfig.setTestOnReturn(true);
-            jedisPool = new JedisPool(poolConfig, hostname, port, 2000, password, ssl);
+            jedisPool = new JedisPool(poolConfig, url);
         }
     }
 

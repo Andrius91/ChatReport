@@ -30,7 +30,13 @@ public class ReportCommand extends Command implements TabExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if(!(sender instanceof ProxiedPlayer)){
-            plugin.log(1, "Command only available for players");
+            if(plugin.isDebug()){
+                plugin.log(1, "Debug mode: off.");
+                plugin.setDebug(false);
+            }else{
+                plugin.log(1, "Debug mode: on.");
+                plugin.setDebug(true);
+            }
             return;
         }
 

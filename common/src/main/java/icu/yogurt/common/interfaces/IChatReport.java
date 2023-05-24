@@ -34,11 +34,10 @@ public interface IChatReport {
             Report report = new Report(null, sender, target, combinedMessages);
             String json = gson.toJson(report);
 
-            System.out.println("json = " + json);
             CompletableFuture<String> response = getApi().postAsync("/api/chatreports", json);
             response.thenAcceptAsync(result -> {
                 Report createdReport = gson.fromJson(result, Report.class);
-                System.out.println("New reporte created: " + createdReport);
+                log(3, "New reporte created: " + createdReport);
             });
         });
 

@@ -67,7 +67,7 @@ public class RedisStorage implements Storage {
         try(Jedis jedis = getRedisConnector().getResource()){
             String key = REDIS_KEY + player;
 
-            messages = jedis.hvals(key)
+            messages = jedis.lrange(key, 0, -1)
                     .stream()
                     .map(x -> gson.fromJson(x, Message.class))
                     .sorted(Comparator.comparing(Message::getLocalDateTime))
@@ -121,7 +121,7 @@ public class RedisStorage implements Storage {
             jedis.rpush(key, value);
 
             // Set the key to expire in 24 hours
-            jedis.expire(key, 120);
+            jedis.expire(key, 24 * 60 * 60);
 
 
         } catch (Exception e) {
