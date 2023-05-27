@@ -46,10 +46,6 @@ public class YamlStorage implements Storage {
         Config.reloadPlayerConfig(player);
     }
 
-    @Override
-    public void saveMessages(List<Message> messages) {
-
-    }
 
     private Map<String, Object> messageToMap(Message message) {
         Map<String, Object> map = new LinkedHashMap<>();
@@ -90,13 +86,13 @@ public class YamlStorage implements Storage {
     }
 
     @Override
-    public String getStaffUUID(String username) {
-       return staffs_map.getOrDefault(username, "");
+    public String getUserUUID(String username) {
+        return null;
     }
 
     @Override
-    public void updateStaffUUID(String username, String uuid) {
-        System.out.println("username = " + username + " uuid = " + uuid);
-        staffs_map.put(username, uuid);
+    public void saveMessages(List<Message> messages) {
+
     }
+
 }

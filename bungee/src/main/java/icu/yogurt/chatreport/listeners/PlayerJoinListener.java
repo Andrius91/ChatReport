@@ -3,6 +3,7 @@ package icu.yogurt.chatreport.listeners;
 import icu.yogurt.chatreport.ChatReport;
 import icu.yogurt.common.config.Config;
 import icu.yogurt.common.interfaces.Storage;
+import icu.yogurt.common.model.UserModel;
 import icu.yogurt.common.storage.YamlStorage;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -25,11 +26,8 @@ public class PlayerJoinListener implements Listener {
             ProxiedPlayer player = e.getPlayer();
             String playerName = e.getPlayer().getName();
             String currentUUID = e.getPlayer().getUniqueId().toString();
-            String path = plugin.getConfig().getString("storage.type");
             Storage storage = plugin.getStorage();
-            boolean isStaff = player.hasPermission("pandora.staff");
-            boolean SAVE_PLAYERS = !path.equalsIgnoreCase("DISABLED");
-            if(storage instanceof YamlStorage && SAVE_PLAYERS){
+            if(storage instanceof YamlStorage){
                 YamlFile config = Config.getPlayerConfig(playerName);
 
                 if(config == null){
@@ -42,12 +40,9 @@ public class PlayerJoinListener implements Listener {
                 Config.reloadPlayerConfig(playerName);
             }
 
-            if(isStaff){
-                String uuid = storage.getStaffUUID(playerName);
-                if(!currentUUID.equals(uuid)){
-                    storage.updateStaffUUID(playerName, currentUUID);
-                }
-            }
+            // Create user in the db
+            UserModel userModel = new UserModel(playerName, currentUUID, null);
+            plugin.getDatabase().createUser(userModel);
         });
 
     }

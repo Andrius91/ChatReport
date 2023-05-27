@@ -1,0 +1,16 @@
+punishment:
+  # Turn auto punisher on or off
+  enabled: true
+  commands:
+    # if the punishment does not have a report id | If the punishment has a report id
+    BAN: ["ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%",
+          "ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"]
+    UN_BAN: ["unban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason%"]
+    MUTE: ["mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%",
+           "mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"]
+
+  units:
+    DAYS: "d"
+    HOURS: "h"
+    MINUTES: "m"
+    SECONDS: "s"

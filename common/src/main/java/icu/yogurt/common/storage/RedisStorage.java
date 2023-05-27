@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import icu.yogurt.common.connector.RedisConnector;
 import icu.yogurt.common.interfaces.IChatReport;
 import icu.yogurt.common.interfaces.Storage;
-import icu.yogurt.common.listener.StaffListener;
 import icu.yogurt.common.model.Message;
+import icu.yogurt.common.model.UserModel;
 import lombok.SneakyThrows;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
@@ -28,7 +28,6 @@ public class RedisStorage implements Storage {
         this.plugin = plugin;
         this.redisConnector = redisConnector;
         this.redisConnector.connect();
-        plugin.runAsync(() -> redisConnector.getResource().subscribe(new StaffListener(plugin), "pandora:staff"));
     }
 
     private synchronized RedisConnector getRedisConnector() {
@@ -42,13 +41,7 @@ public class RedisStorage implements Storage {
 
     @Override
     public boolean playerExists(String player) {
-        try(Jedis jedis = getRedisConnector().getResource()){
-            String key = REDIS_KEY + player;
-            return jedis.exists(key);
-        }catch (Exception e){
-            plugin.log(1, "Error checking if user exists: " + e.getMessage());
-        }
-        return false;
+        return plugin.getDatabase().verifyUserByUsername(player);
     }
 
     @Override
@@ -92,17 +85,9 @@ public class RedisStorage implements Storage {
     }
 
     @Override
-    public String getStaffUUID(String username) {
-        return getStaffMap().getOrDefault(username, "");
-    }
-
-    @Override
-    public void updateStaffUUID(String username, String uuid) {
-        try(Jedis jedis = getRedisConnector().getResource()){
-            jedis.publish("pandora:staff", username + ":" + uuid);
-        }catch(Exception e){
-            plugin.log(1, "Failed to save staff uuid to Redis: " + e.getMessage());
-        }
+    public String getUserUUID(String username) {
+        UserModel userModel = plugin.getDatabase().getUserByUsername(username);
+        return userModel.getUuid();
     }
 
     private void addMessage(String key, String value){
@@ -122,7 +107,6 @@ public class RedisStorage implements Storage {
 
             // Set the key to expire in 24 hours
             jedis.expire(key, 24 * 60 * 60);
-
 
         } catch (Exception e) {
 

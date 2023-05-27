@@ -1,21 +1,15 @@
 package icu.yogurt.common.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-import java.util.List;
+import lombok.*;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString
 public class Report {
-
-    private final String reportId;
-    private final String sender;
-    private final String target;
-    private final List<Message> messages;
-
+    private String sender;
+    private String target;
+    private String reason;
+    private String server;
 }

@@ -13,7 +13,7 @@ import lombok.*;
 public class Punishment {
 
     private Integer punishmentId;
-    private Report report;
+    private ChatReport chatReport;
     private PunishType type;
     private Staff staff;
     private String target;

@@ -10,6 +10,14 @@ public interface Storage {
 
     Map<String, String> getStaffMap();
 
+
+    /**
+     *
+     * Verify if player exists
+     *
+     * @param player player
+     * @return true or false
+     */
     boolean playerExists(String player);
 
     /**
@@ -44,19 +52,12 @@ public interface Storage {
 
     /**
      *
-     * Get staff uuid from the username
+     * Get user uuid from the username
      *
      * @param username username
      * @return uuid string
      */
-    String getStaffUUID(String username);
+    String getUserUUID(String username);
 
-    /**
-     *
-     * Update the staff uuid from the username
-     *
-     * @param username username
-     * @param uuid uuid
-     */
-    void updateStaffUUID(String username, String uuid);
+
 }

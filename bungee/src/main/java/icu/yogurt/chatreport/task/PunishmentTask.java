@@ -3,9 +3,8 @@ package icu.yogurt.chatreport.task;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import icu.yogurt.chatreport.ChatReport;
 import icu.yogurt.common.model.Punishment;
-import icu.yogurt.common.model.Report;
+import icu.yogurt.common.model.ChatReport;
 import icu.yogurt.common.model.enums.PunishStatus;
 import icu.yogurt.common.model.enums.PunishType;
 import icu.yogurt.common.model.enums.PunishUnit;
@@ -17,14 +16,14 @@ import java.util.concurrent.CompletableFuture;
 
 public class PunishmentTask implements Runnable {
 
-    private final ChatReport plugin;
+    private final icu.yogurt.chatreport.ChatReport plugin;
     private final YamlFile config;
     private final Gson gson;
     private final Type punishmentListType;
 
-    public PunishmentTask(ChatReport plugin){
+    public PunishmentTask(icu.yogurt.chatreport.ChatReport plugin){
         this.plugin = plugin;
-        this.config = plugin.getConfig();
+        this.config = plugin.getPunishmentConfig();
         this.gson = new Gson();
         punishmentListType = new TypeToken<List<Punishment>>(){}.getType();
     }
@@ -69,21 +68,21 @@ public class PunishmentTask implements Runnable {
 
     private String getPunishmentCommand(Punishment punishment) {
         PunishType type = punishment.getType();
-        Report report = punishment.getReport();
+        ChatReport chatReport = punishment.getChatReport();
 
         String staff = punishment.getStaff().getUsername();
-        String staffUuid = plugin.getStorage().getStaffUUID(staff);
+        String staffUuid = plugin.getStorage().getUserUUID(staff);
 
         String target = punishment.getTarget();
         String reason = punishment.getReason();
-        String id = report != null ? report.getReportId() : "";
+        String id = chatReport != null ? chatReport.getReportId() : "";
 
         String timeValue = punishment.getTimeValue().toString();
         PunishUnit unit = punishment.getTimeUnit();
         String unitString = getUnit(unit);
         String time = timeValue + unitString;
 
-        int index = report == null ? 0 : 1;
+        int index = chatReport == null ? 0 : 1;
 
         List<String> commandsList = config.getStringList("punishment.commands." + type.name());
         String path = commandsList.get(index);

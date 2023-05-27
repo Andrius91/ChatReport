@@ -1,13 +1,13 @@
 debug: false
 use-redis-bungee: false #For autocomplete nicks in /chatreport command
-command:
-  name: "chatreport"
-  permission: "pandora.chatreport"
-  aliases:
-    - "crp"
 api:
   host: "http://127.0.0.1:8080"
   key: ""
+database:
+  type: "MYSQL" #MYSQL
+  user: "root"
+  password: "root"
+  url: "jdbc:mysql://localhost:3306/dbname"
 storage:
   type: REDIS #YAML | REDIS | DISABLED
   ssl: false
@@ -20,24 +20,46 @@ messages:
     - "m"
     - "r"
     - "reply"
-punishment:
-  # Turn auto punisher on or off
-  enabled: true
-  commands:
-    # if the punishment does not have a report id | If the punishment has a report id
-    BAN: ["ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%",
-          "ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"]
-    UN_BAN: ["unban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason%"]
-    MUTE: ["mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%",
-           "mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"]
 
-  units:
-    DAYS: "d"
-    HOURS: "h"
-    MINUTES: "m"
-    SECONDS: "s"
+commands:
+  chat-report:
+    command: "chatreport"
+    usage: "/chatreport (playerName)"
+    permission: "pandora.chatreport"
+    aliases:
+      - "crp"
+  report:
+    command: "report"
+    usage: "/report (playerName)"
+    permission: "pandora.report"
+    aliases:
+      - "repo"
 
-lang:
-  correct-usage: "&cCorrect usage: /chatreport (playerName)"
-  player-does-not-exist: "&cWe couldn't find the player in our database."
-  success-report: "&aYou have sent the report successfully."
+report:
+  messages:
+    sent-to:
+      success:
+        - "&aYou have successfully reported %target% Reason: %reason%"
+      staffs:
+        - "&r "
+        - "&c&l¡NEW REPORT!"
+        - "&r "
+        - "&fSender: &6%reporter%"
+        - "&fTarget: &6%target%"
+        - "&fReason: &6%reason%"
+        - "&fServer: &6%server%"
+        - "&r "
+    server-component:
+      text: "&6&o(Click here to go)"
+      hover: "&7Click here to go to the server."
+      command: "/server %server%"
+  header: |-
+    &e&lSelect an option:
+    &e
+  options:
+    - text: '&8   ► &b&nHacks'
+      hover: '&7Report %target% for hacks'
+      command: '/report %target% Hacks'
+    - text: '&8   ► &b&nChat infraction'
+      hover: '&7Report %target% for chat infractions'
+      command: '/report %target% Chat infractions'

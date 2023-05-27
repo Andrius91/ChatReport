@@ -11,9 +11,11 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 @ToString
-public class CRCommand {
-    private final String command;
-    private final String usage;
-    private final String permission;
-    private final List<String> aliases;
+public class ChatReport {
+
+    private final String reportId;
+    private final String sender;
+    private final String target;
+    private final List<Message> messages;
+
 }

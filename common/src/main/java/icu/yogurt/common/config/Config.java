@@ -22,8 +22,11 @@ public class Config{
         if (!conf.exists()) {
             try {
                 InputStream in = Config.class.getResourceAsStream("/" + fileName);
-                assert in != null;
-                Files.copy(in, conf.toPath());
+                if(in != null){
+                    Files.copy(in, conf.toPath());
+                }else{
+                    conf.createNewFile();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

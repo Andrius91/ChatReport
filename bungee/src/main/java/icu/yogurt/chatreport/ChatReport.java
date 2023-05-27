@@ -4,12 +4,15 @@ import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.saicone.ezlib.Dependencies;
 import com.saicone.ezlib.Dependency;
 import com.saicone.ezlib.EzlibLoader;
+import icu.yogurt.chatreport.commands.ChatReportCommand;
 import icu.yogurt.chatreport.commands.ReportCommand;
 import icu.yogurt.chatreport.listeners.PlayerChatListener;
 import icu.yogurt.chatreport.listeners.PlayerJoinListener;
+import icu.yogurt.chatreport.listeners.ReportListener;
 import icu.yogurt.chatreport.task.PunishmentTask;
 import icu.yogurt.common.API;
 import icu.yogurt.common.config.Config;
+import icu.yogurt.common.connector.DatabaseConnector;
 import icu.yogurt.common.connector.RedisConnector;
 import icu.yogurt.common.interfaces.IChatReport;
 import icu.yogurt.common.interfaces.Storage;
@@ -40,6 +43,7 @@ import java.util.stream.Collectors;
                 // Simple YAML
                 @Dependency(value = "me.carleslc.Simple-YAML:Simple-Yaml:1.8.4",
                         relocate = {"org.simpleyaml", "{package}.libs.yaml"}),
+                // OkHttp3
                 @Dependency(value = "com.squareup.okhttp3:okhttp:4.2.2", relocate = {
                         "com.squareup", "{package}.libs.okhttp3"
                 })
@@ -58,13 +62,19 @@ public final class ChatReport extends Plugin implements IChatReport{
 
     private RedisConnector redisConnector;
     private Storage storage;
+    private DatabaseConnector database;
     private TaskScheduler scheduler;
     private YamlFile config;
+    private YamlFile punishmentConfig;
+    private YamlFile langConfig;
 
     private API api;
 
     @Setter
     private boolean isDebug = false;
+
+    @Getter
+    private boolean isRedisBungee = false;
 
     @Override
     public void onLoad() {
@@ -77,6 +87,7 @@ public final class ChatReport extends Plugin implements IChatReport{
         loadConfigs();
 
         runAsync(() -> {
+            // Storage
             String storage_type = config.getString("storage.type");
             if(storage_type.equalsIgnoreCase("REDIS")){
                 String url = config.getString("storage.url");
@@ -85,6 +96,14 @@ public final class ChatReport extends Plugin implements IChatReport{
             }else{
                 storage = new YamlStorage();
             }
+
+            // Database
+            String user = config.getString("database.user");
+            String password = config.getString("database.password");
+            String url = config.getString("database.url");
+
+            database = new DatabaseConnector(url, user, password, this);
+
         });
     }
 
@@ -94,7 +113,8 @@ public final class ChatReport extends Plugin implements IChatReport{
         String api_host = getConfig().getString("api.host");
         String api_key = getConfig().getString("api.key");
         isDebug = getConfig().getBoolean("debug");
-        boolean auto_punisher = getConfig().getBoolean("punishment.enabled");
+        isRedisBungee = config.getBoolean("use-redis-bungee");
+        boolean auto_punisher = punishmentConfig.getBoolean("punishment.enabled");
 
         if(!api_host.isEmpty() && !api_key.isEmpty()){
             api = new API(api_host, api_key);
@@ -108,6 +128,10 @@ public final class ChatReport extends Plugin implements IChatReport{
         }
         registerListeners();
         registerCommand();
+
+        if(isRedisBungee){
+            registerChannels();
+        }
     }
 
     @SneakyThrows
@@ -117,11 +141,16 @@ public final class ChatReport extends Plugin implements IChatReport{
         if(redisConnector != null) {
             redisConnector.close(); // Close the Redis connection
         }
+        if(isRedisBungee){
+            unregisterChannels();
+        }
     }
 
     private void loadConfigs(){
         Config.createFolder(this);
         config = new Config().get(this, "config.yml");
+        punishmentConfig = new Config().get(this, "punishment.yml");
+        langConfig = new Config().get(this, "lang.yml");
     }
 
     private void registerListeners(){
@@ -132,6 +161,9 @@ public final class ChatReport extends Plugin implements IChatReport{
             registerListener(new PlayerChatListener(this));
 
         }
+        if(isRedisBungee){
+            registerListener(new ReportListener(this));
+        }
 
         registerListener(new PlayerJoinListener(this));
     }
@@ -140,12 +172,36 @@ public final class ChatReport extends Plugin implements IChatReport{
         ProxyServer.getInstance().getPluginManager().registerListener(this, listener);
     }
 
+    private void registerChannels(){
+        RedisBungeeAPI.getRedisBungeeApi().registerPubSubChannels("pandora:report");
+    }
+
+    private void unregisterChannels(){
+        RedisBungeeAPI.getRedisBungeeApi().unregisterPubSubChannels("pandora:report");
+    }
+
     private void registerCommand() {
-        String command = config.getString("command.name");
-        String permission = config.getString("command.permission");
-        List<String> aliases = config.getStringList("command.aliases");
-        CRCommand crCommand = new CRCommand(command, permission, aliases);
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ReportCommand(this, crCommand));
+
+        // ChatReport
+        CRCommand crCommand = getCRCommand("chat-report");
+
+        ProxyServer.getInstance().getPluginManager()
+                .registerCommand(this, new ChatReportCommand(this, crCommand));
+
+        // Report
+        CRCommand rCommand = getCRCommand("report");
+
+        ProxyServer.getInstance().getPluginManager()
+                .registerCommand(this, new ReportCommand(this, rCommand));
+    }
+
+    private CRCommand getCRCommand(String command){
+        String name = config.getString("commands."+command+".command");
+        String usage = config.getString("commands."+command+".usage");
+        String permission = config.getString("commands."+command+".permission");
+        List<String> aliases = config.getStringList("commands."+command+".aliases");
+
+        return new CRCommand(name, usage, permission, aliases);
     }
 
     /*
@@ -172,9 +228,8 @@ public final class ChatReport extends Plugin implements IChatReport{
 
     @Override
     public List<String> getPlayersList(String server) {
-        boolean usingRedisBungee = config.getBoolean("use-redis-bungee");
         List<String> playersList;
-        if(usingRedisBungee){
+        if(isRedisBungee){
             playersList = RedisBungeeAPI.getRedisBungeeApi().getPlayersOnServer(server)
                     .stream().map(x -> RedisBungeeAPI.getRedisBungeeApi().getNameFromUuid(x))
                     .collect(Collectors.toList());
