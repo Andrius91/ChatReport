@@ -87,7 +87,7 @@ public class RedisStorage implements Storage {
     @Override
     public String getUserUUID(String username) {
         UserModel userModel = plugin.getDatabase().getUserByUsername(username);
-        return userModel.getUuid();
+        return userModel != null ? userModel.getUuid() : "0";
     }
 
     private void addMessage(String key, String value){
