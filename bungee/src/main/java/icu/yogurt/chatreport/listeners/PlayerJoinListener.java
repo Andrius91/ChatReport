@@ -10,6 +10,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.util.Collections;
@@ -19,7 +20,7 @@ public class PlayerJoinListener implements Listener {
 
     private final ChatReport plugin;
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PostLoginEvent e){
 
         plugin.runAsync(() -> {

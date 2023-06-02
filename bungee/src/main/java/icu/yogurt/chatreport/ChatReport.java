@@ -20,7 +20,6 @@ import icu.yogurt.common.model.CRCommand;
 import icu.yogurt.common.storage.RedisStorage;
 import icu.yogurt.common.storage.YamlStorage;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -67,13 +66,8 @@ public final class ChatReport extends Plugin implements IChatReport{
     private YamlFile config;
     private YamlFile punishmentConfig;
     private YamlFile langConfig;
-
     private API api;
-
-    @Setter
     private boolean isDebug = false;
-
-    @Getter
     private boolean isRedisBungee = false;
 
     @Override

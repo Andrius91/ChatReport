@@ -62,4 +62,4 @@ report:
       command: '/report %target% Hacks'
     - text: '&8   ► &b&nChat infraction'
       hover: '&7Report %target% for chat infractions'
-      command: '/report %target% Chat infractions'
+      command: '/chatreport %target% Chat infractions'
