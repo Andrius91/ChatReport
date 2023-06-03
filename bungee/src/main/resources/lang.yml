@@ -4,3 +4,4 @@ lang:
   self-report: "&cYou cannot report yourself."
   player-does-not-exist: "&cWe couldn't find the player in our database."
   success-report: "&aYou have sent the report successfully."
+  has-cooldown: "&cYou need to wait %time%s to use this command again."

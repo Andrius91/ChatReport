@@ -5,6 +5,7 @@ import icu.yogurt.common.API;
 import icu.yogurt.common.connector.DatabaseConnector;
 import icu.yogurt.common.model.Message;
 import icu.yogurt.common.model.ChatReport;
+import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
 import java.util.List;
@@ -20,6 +21,11 @@ public interface IChatReport {
     DatabaseConnector getDatabase();
 
     API getApi();
+
+    YamlFile getConfig();
+
+    YamlFile getPunishmentConfig();
+    YamlFile getLangConfig();
 
     /**
      * Method to execute an asynchronous task using the scheduler.

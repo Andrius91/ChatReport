@@ -25,17 +25,18 @@ commands:
   chat-report:
     command: "chatreport"
     usage: "/chatreport (playerName)"
-    permission: "pandora.chatreport"
+    permission: "pandoracrp.command.chatreport"
     aliases:
       - "crp"
   report:
     command: "report"
     usage: "/report (playerName)"
-    permission: "pandora.report"
+    permission: "pandoracrp.command.report"
     aliases:
       - "repo"
 
 report:
+  cooldown: 15
   messages:
     sent-to:
       success:

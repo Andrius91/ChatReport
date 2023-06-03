@@ -20,6 +20,10 @@ public class ChatReportCommand extends BaseCommand {
     protected void executeAsync(CommandSender sender, String[] args) {
         PlayerUtils.sendPlayerMessage(sender, SUCCESS_REPORT);
         plugin.createNewReport(senderName, target);
+
+        // Cooldown
+        cooldownManager.addPlayer(playerUuid);
+
     }
 }
 

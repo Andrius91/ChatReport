@@ -7,7 +7,6 @@ import icu.yogurt.common.model.CRCommand;
 import icu.yogurt.common.model.Report;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class ReportCommand extends BaseCommand {
 
@@ -27,8 +26,6 @@ public class ReportCommand extends BaseCommand {
 
     @Override
     protected void executeAsync(CommandSender sender, String[] args) {
-
-        ProxiedPlayer player = (ProxiedPlayer) sender;
         if(args.length == 1){
             PlayerUtils.sendPlayerMessage(sender, HEADER);
             for(TextComponent component : PlayerUtils.reportOptions(plugin, target)){
@@ -59,11 +56,15 @@ public class ReportCommand extends BaseCommand {
 
         PlayerUtils.sendPlayerMessage(sender, SUCCESS_REPORT);
 
+        // Cooldown
+        cooldownManager.addPlayer(playerUuid);
+
         if(plugin.isRedisBungee()){
             String json = plugin.gson.toJson(report);
             RedisBungeeAPI.getRedisBungeeApi().sendChannelMessage("pandora:report", json);
         }else{
             PlayerUtils.sendReportToStaffs(plugin, report);
         }
+
     }
 }
