@@ -3,22 +3,28 @@ package icu.yogurt.common.interfaces;
 import icu.yogurt.common.model.Message;
 
 import java.util.List;
-import java.util.Map;
 
 public interface Storage {
 
 
-    Map<String, String> getStaffMap();
-
 
     /**
      *
-     * Verify if player exists
+     * Check if player exists
      *
      * @param player player
      * @return true or false
      */
     boolean playerExists(String player);
+
+    /**
+     *
+     * Check if player has messages
+     *
+     * @param player player
+     * @return true or false
+     */
+    boolean playerHasMessages(String player);
 
     /**
      *

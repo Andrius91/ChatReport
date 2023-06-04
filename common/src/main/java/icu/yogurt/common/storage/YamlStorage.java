@@ -12,16 +12,16 @@ import java.util.stream.Stream;
 
 @RequiredArgsConstructor
 public class YamlStorage implements Storage {
-    private final Map<String, String> staffs_map = new HashMap<>();
-
-    @Override
-    public Map<String, String> getStaffMap() {
-        return staffs_map;
-    }
 
     @Override
     public boolean playerExists(String player) {
         return Config.getPlayerConfig(player) != null;
+    }
+
+    @Override
+    public boolean playerHasMessages(String player) {
+        List<Message> playerMessages = getMessages(player);
+        return playerMessages.size() > 0;
     }
 
     @Override
@@ -60,7 +60,6 @@ public class YamlStorage implements Storage {
     public List<Message> getMessages(String playerName) {
         YamlFile config = Config.getPlayerConfig(playerName);
 
-        @SuppressWarnings("unchecked")
         List<Object> messageList = (List<Object>) config.getList("messages");
 
         return messageList.stream()
@@ -87,7 +86,8 @@ public class YamlStorage implements Storage {
 
     @Override
     public String getUserUUID(String username) {
-        return null;
+        YamlFile config = Config.getPlayerConfig(username);
+        return config.getString("uuid");
     }
 
     @Override

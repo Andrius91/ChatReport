@@ -7,8 +7,10 @@ import net.md_5.bungee.api.CommandSender;
 
 public class ChatReportCommand extends BaseCommand {
 
+    private final String NO_MESSAGES_FOUND;
     public ChatReportCommand(ChatReport plugin, CRCommand command) {
         super(plugin, command);
+        this.NO_MESSAGES_FOUND = plugin.getLangConfig().getString("no-messages-found");
     }
 
     @Override
@@ -18,6 +20,12 @@ public class ChatReportCommand extends BaseCommand {
 
     @Override
     protected void executeAsync(CommandSender sender, String[] args) {
+
+        if(!plugin.getStorage().playerHasMessages(target)){
+            PlayerUtils.sendPlayerMessage(sender, NO_MESSAGES_FOUND);
+            return;
+        }
+
         PlayerUtils.sendPlayerMessage(sender, SUCCESS_REPORT);
         plugin.createNewReport(senderName, target);
 

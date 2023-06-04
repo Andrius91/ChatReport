@@ -46,8 +46,8 @@ public class PlayerChatListener implements Listener {
 
         executorService.submit(() -> {
             long startTime = System.currentTimeMillis();
-             Message message = new Message(playerMessage, server, playerName, Message.nowDate());
-             plugin.getStorage().saveMessage(message);
+            Message message = new Message(playerMessage, server, playerName, Message.nowDate());
+            plugin.getStorage().saveMessage(message);
             long endTime = System.currentTimeMillis();
             long elapsedTime = endTime - startTime;
 

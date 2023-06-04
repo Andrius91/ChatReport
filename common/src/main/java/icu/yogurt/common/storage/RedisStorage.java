@@ -22,7 +22,7 @@ public class RedisStorage implements Storage {
     private final Gson gson = new Gson();
     private final RedisConnector redisConnector;
     private final String REDIS_KEY = "chat-report:";
-    private final Map<String, String> staffMap = new HashMap<>();
+    private final String EXISTS_KEY = REDIS_KEY + "exists:";
 
     public RedisStorage(IChatReport plugin, RedisConnector redisConnector) {
         this.plugin = plugin;
@@ -34,14 +34,31 @@ public class RedisStorage implements Storage {
         return redisConnector;
     }
 
-    @Override
-    public Map<String, String> getStaffMap() {
-        return this.staffMap;
-    }
 
     @Override
     public boolean playerExists(String player) {
-        return plugin.getDatabase().verifyUserByUsername(player);
+        UserModel cachedUserModel = getCachedUserModel(player);
+        if (cachedUserModel != null) {
+            return true;
+        }
+
+        UserModel userModel = plugin.getDatabase().getUserByUsername(player);
+        if (userModel != null) {
+            cacheUserModel(player, userModel);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean playerHasMessages(String player) {
+        try(Jedis jedis = getRedisConnector().getResource()){
+            return jedis.exists(REDIS_KEY + player);
+        }catch (Exception e){
+            plugin.log(1, "Error checking if the player has messages: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override
@@ -86,8 +103,18 @@ public class RedisStorage implements Storage {
 
     @Override
     public String getUserUUID(String username) {
+        UserModel cachedUserModel = getCachedUserModel(username);
+        if (cachedUserModel != null) {
+            return cachedUserModel.getUuid();
+        }
+
         UserModel userModel = plugin.getDatabase().getUserByUsername(username);
-        return userModel != null ? userModel.getUuid() : "0";
+        if (userModel != null) {
+            cacheUserModel(username, userModel);
+            return userModel.getUuid();
+        }
+
+        return "0";
     }
 
     private void addMessage(String key, String value){
@@ -125,23 +152,22 @@ public class RedisStorage implements Storage {
                 String json = gson.toJson(message);
                 String key = REDIS_KEY + sender;
 
-                // Agregar el mensaje como un nuevo campo en el hash
+                // Add the message as a new field in the hash
                 transaction.rpush(key, json);
 
-                // Establecer el tiempo de expiración en 24 horas
-                //transaction.expire(key, 24 * 60 * 60);
-                transaction.expire(key, 120);
+                // Set expiration time to 24 hours
+                transaction.expire(key, 24 * 60 * 60);
 
-                // Obtener la longitud de la lista (se agregará a la transacción)
+                // Get the length of the list (will be added to the transaction)
                 Response<Long> length = transaction.llen(key);
 
                 lengthMap.put(sender, length);
             }
 
-            // Ejecutar la transacción y obtener los resultados
+            // Execute the transaction and get the results
             transaction.exec();
 
-            // Obtener el valor de la longitud de la lista para cada mensaje
+            // Get list length value for each message
             for (Message message : messages) {
                 String sender = message.getSender();
                 Response<Long> lengthResponse = lengthMap.get(sender);
@@ -150,7 +176,7 @@ public class RedisStorage implements Storage {
                     long length = lengthResponse.get();
 
                     if (length > 25) {
-                        // Eliminar los elementos más antiguos, dejando solo los últimos 25
+                        // Delete the oldest items, leaving only the last 25
                         jedis.ltrim(REDIS_KEY + sender, length - 25, -1);
                     }
                 }
@@ -158,6 +184,25 @@ public class RedisStorage implements Storage {
         } catch (Exception e) {
             e.printStackTrace();
             plugin.log(1, "Failed to save messages to Redis: " + e.getMessage());
+        }
+    }
+
+    private UserModel getCachedUserModel(String username) {
+        try (Jedis jedis = getRedisConnector().getResource()) {
+            String json = jedis.get(EXISTS_KEY + username);
+            return json != null ? gson.fromJson(json, UserModel.class) : null;
+        } catch (Exception e) {
+            plugin.log(1, "Failed to get cached UserModel: " + e.getMessage());
+            return null;
+        }
+    }
+
+    private void cacheUserModel(String username, UserModel userModel) {
+        try (Jedis jedis = getRedisConnector().getResource()) {
+            String json = gson.toJson(userModel);
+            jedis.setex(EXISTS_KEY + username, 24 * 60 * 60, json);
+        } catch (Exception e) {
+            plugin.log(1, "Failed to cache UserModel: " + e.getMessage());
         }
     }
 }

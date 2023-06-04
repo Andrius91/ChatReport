@@ -39,6 +39,7 @@ public class PlayerJoinListener implements Listener {
                 config.set("uuid", player.getUniqueId().toString());
 
                 Config.reloadPlayerConfig(playerName);
+                return;
             }
 
             // Create user in the db

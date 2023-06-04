@@ -71,6 +71,12 @@ public abstract class BaseCommand extends Command implements TabExecutor {
 
         // Target and Sender
         target = args[0];
+
+        if (target.length() > 16) {
+            PlayerUtils.sendPlayerMessage(sender, CORRECT_USAGE);
+            return;
+        }
+
         senderName = sender.getName();
 
         // Cancel self report
@@ -80,7 +86,12 @@ public abstract class BaseCommand extends Command implements TabExecutor {
         }
 
         plugin.runAsync(() ->{
+            long startTime = System.currentTimeMillis();
             boolean targetExists = plugin.getStorage().playerExists(target);
+            long endTime = System.currentTimeMillis();
+            long elapsedTime = endTime - startTime;
+
+            plugin.log(3, "(" + target + ":" +  targetExists + ") loaded in "+ elapsedTime + "ms");
 
             if(!targetExists){
                 PlayerUtils.sendPlayerMessage(sender, PLAYER_NOT_FOUND);

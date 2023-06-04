@@ -1,5 +1,5 @@
 debug: false
-use-redis-bungee: false #For autocomplete nicks in /chatreport command
+use-redis-bungee: false
 api:
   host: "http://127.0.0.1:8080"
   key: ""
