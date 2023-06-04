@@ -10,7 +10,7 @@ public class ChatReportCommand extends BaseCommand {
     private final String NO_MESSAGES_FOUND;
     public ChatReportCommand(ChatReport plugin, CRCommand command) {
         super(plugin, command);
-        this.NO_MESSAGES_FOUND = plugin.getLangConfig().getString("no-messages-found");
+        this.NO_MESSAGES_FOUND = plugin.getLangConfig().getString("lang.no-messages-found");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package icu.yogurt.common.storage;
 
 import com.google.gson.Gson;
+import icu.yogurt.common.cache.UserCache;
 import icu.yogurt.common.connector.RedisConnector;
 import icu.yogurt.common.interfaces.IChatReport;
 import icu.yogurt.common.interfaces.Storage;
@@ -22,12 +23,14 @@ public class RedisStorage implements Storage {
     private final Gson gson = new Gson();
     private final RedisConnector redisConnector;
     private final String REDIS_KEY = "chat-report:";
-    private final String EXISTS_KEY = REDIS_KEY + "exists:";
+    private final UserCache userCache;
 
     public RedisStorage(IChatReport plugin, RedisConnector redisConnector) {
         this.plugin = plugin;
         this.redisConnector = redisConnector;
         this.redisConnector.connect();
+        this.userCache = plugin.getUserCache();
+
     }
 
     private synchronized RedisConnector getRedisConnector() {
@@ -37,18 +40,35 @@ public class RedisStorage implements Storage {
 
     @Override
     public boolean playerExists(String player) {
-        UserModel cachedUserModel = getCachedUserModel(player);
+        UserModel cachedUserModel = userCache.getCachedUserModel(player);
+
         if (cachedUserModel != null) {
             return true;
         }
 
         UserModel userModel = plugin.getDatabase().getUserByUsername(player);
         if (userModel != null) {
-            cacheUserModel(player, userModel);
+            userCache.cacheUserModel(player, userModel);
             return true;
         }
 
         return false;
+    }
+
+    @Override
+    public String getUserUUID(String username) {
+        UserModel cachedUserModel = userCache.getCachedUserModel(username);
+        if (cachedUserModel != null) {
+            return cachedUserModel.getUuid();
+        }
+
+        UserModel userModel = plugin.getDatabase().getUserByUsername(username);
+        if (userModel != null) {
+            userCache.cacheUserModel(username, userModel);
+            return userModel.getUuid();
+        }
+
+        return "0";
     }
 
     @Override
@@ -99,22 +119,6 @@ public class RedisStorage implements Storage {
                 .sorted(Comparator.comparing(Message::getLocalDateTime))
                 .limit(limit)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getUserUUID(String username) {
-        UserModel cachedUserModel = getCachedUserModel(username);
-        if (cachedUserModel != null) {
-            return cachedUserModel.getUuid();
-        }
-
-        UserModel userModel = plugin.getDatabase().getUserByUsername(username);
-        if (userModel != null) {
-            cacheUserModel(username, userModel);
-            return userModel.getUuid();
-        }
-
-        return "0";
     }
 
     private void addMessage(String key, String value){
@@ -187,22 +191,4 @@ public class RedisStorage implements Storage {
         }
     }
 
-    private UserModel getCachedUserModel(String username) {
-        try (Jedis jedis = getRedisConnector().getResource()) {
-            String json = jedis.get(EXISTS_KEY + username);
-            return json != null ? gson.fromJson(json, UserModel.class) : null;
-        } catch (Exception e) {
-            plugin.log(1, "Failed to get cached UserModel: " + e.getMessage());
-            return null;
-        }
-    }
-
-    private void cacheUserModel(String username, UserModel userModel) {
-        try (Jedis jedis = getRedisConnector().getResource()) {
-            String json = gson.toJson(userModel);
-            jedis.setex(EXISTS_KEY + username, 24 * 60 * 60, json);
-        } catch (Exception e) {
-            plugin.log(1, "Failed to cache UserModel: " + e.getMessage());
-        }
-    }
 }

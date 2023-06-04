@@ -11,6 +11,7 @@ import icu.yogurt.chatreport.listeners.PlayerJoinListener;
 import icu.yogurt.chatreport.listeners.ReportListener;
 import icu.yogurt.chatreport.task.PunishmentTask;
 import icu.yogurt.common.API;
+import icu.yogurt.common.cache.UserCache;
 import icu.yogurt.common.config.Config;
 import icu.yogurt.common.connector.DatabaseConnector;
 import icu.yogurt.common.connector.RedisConnector;
@@ -68,6 +69,7 @@ public final class ChatReport extends Plugin implements IChatReport{
     private YamlFile punishmentConfig;
     private YamlFile langConfig;
     private API api;
+    private UserCache userCache;
 
     @Setter
     private boolean isDebug;
@@ -89,6 +91,7 @@ public final class ChatReport extends Plugin implements IChatReport{
             if(storage_type.equalsIgnoreCase("REDIS")){
                 String url = config.getString("storage.url");
                 redisConnector = new RedisConnector(url);
+                this.userCache = new UserCache(this, redisConnector);
                 storage = new RedisStorage(this, redisConnector);
             }else{
                 storage = new YamlStorage();
@@ -258,6 +261,11 @@ public final class ChatReport extends Plugin implements IChatReport{
                 getLogger().log(Level.INFO, message);
                 break;
         }
+    }
+
+    @Override
+    public UserCache getUserCache() {
+        return this.userCache;
     }
 
     @Override

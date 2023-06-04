@@ -2,6 +2,7 @@ package icu.yogurt.common.interfaces;
 
 import com.google.gson.Gson;
 import icu.yogurt.common.API;
+import icu.yogurt.common.cache.UserCache;
 import icu.yogurt.common.connector.DatabaseConnector;
 import icu.yogurt.common.model.Message;
 import icu.yogurt.common.model.ChatReport;
@@ -15,6 +16,8 @@ public interface IChatReport {
     Gson gson = new Gson();
 
     void log(int level, String message);
+
+    UserCache getUserCache();
     File getDataFolder();
 
     Storage getStorage();

@@ -91,7 +91,7 @@ public abstract class BaseCommand extends Command implements TabExecutor {
             long endTime = System.currentTimeMillis();
             long elapsedTime = endTime - startTime;
 
-            plugin.log(3, "(" + target + ":" +  targetExists + ") loaded in "+ elapsedTime + "ms");
+            plugin.log(3, "(" + target + ":" +  targetExists + ") executed in "+ elapsedTime + "ms");
 
             if(!targetExists){
                 PlayerUtils.sendPlayerMessage(sender, PLAYER_NOT_FOUND);
