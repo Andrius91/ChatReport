@@ -40,8 +40,12 @@ public class RedisStorage implements Storage {
 
     @Override
     public boolean playerExists(String player) {
-        UserModel cachedUserModel = userCache.getCachedUserModel(player);
+        boolean isInvalid = userCache.isSavedInvalid(player);
+        if(isInvalid){
+            return false;
+        }
 
+        UserModel cachedUserModel = userCache.getCachedUserModel(player);
         if (cachedUserModel != null) {
             return true;
         }
@@ -52,6 +56,7 @@ public class RedisStorage implements Storage {
             return true;
         }
 
+        userCache.saveInvalid(player);
         return false;
     }
 
@@ -74,7 +79,7 @@ public class RedisStorage implements Storage {
     @Override
     public boolean playerHasMessages(String player) {
         try(Jedis jedis = getRedisConnector().getResource()){
-            return jedis.exists(REDIS_KEY + player);
+            return jedis.exists(REDIS_KEY + player.toLowerCase());
         }catch (Exception e){
             plugin.log(1, "Error checking if the player has messages: " + e.getMessage());
             return false;
@@ -84,7 +89,7 @@ public class RedisStorage implements Storage {
     @Override
     public void saveMessage(Message message) {
         String json = gson.toJson(message);
-        String key = REDIS_KEY + message.getSender();
+        String key = REDIS_KEY + message.getSender().toLowerCase();
 
         addMessage(key, json);
     }
@@ -95,7 +100,7 @@ public class RedisStorage implements Storage {
         CompletableFuture<List<Message>> completableFuture = new CompletableFuture<>();
         List<Message> messages = new LinkedList<>();
         try(Jedis jedis = getRedisConnector().getResource()){
-            String key = REDIS_KEY + player;
+            String key = REDIS_KEY + player.toLowerCase();
 
             messages = jedis.lrange(key, 0, -1)
                     .stream()
