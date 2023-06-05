@@ -8,6 +8,8 @@ punishment:
     UN_BAN: ["unban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason%"]
     MUTE: ["mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%",
            "mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"]
+    WARN: [ "warn -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason%",
+            "warn -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id%" ]
 
   units:
     DAYS: "d"
