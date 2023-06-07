@@ -1,6 +1,9 @@
 punishment:
   # Turn auto punisher on or off
   enabled: true
+  events:
+    on-join: ["MUTE", "WARN"]
+    task: ["BAN", "UN_BAN"]
   commands:
     # if the punishment does not have a report id | If the punishment has a report id
     BAN: ["ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%",

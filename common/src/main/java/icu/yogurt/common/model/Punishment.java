@@ -14,6 +14,7 @@ public class Punishment {
 
     private Integer punishmentId;
     private ChatReport chatReport;
+    private String date;
     private PunishType type;
     private Staff staff;
     private String target;

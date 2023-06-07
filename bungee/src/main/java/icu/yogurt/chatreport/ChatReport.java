@@ -18,6 +18,7 @@ import icu.yogurt.common.connector.RedisConnector;
 import icu.yogurt.common.interfaces.IChatReport;
 import icu.yogurt.common.interfaces.Storage;
 import icu.yogurt.common.model.CRCommand;
+import icu.yogurt.common.service.PunishmentService;
 import icu.yogurt.common.storage.RedisStorage;
 import icu.yogurt.common.storage.YamlStorage;
 import lombok.Getter;
@@ -70,6 +71,7 @@ public final class ChatReport extends Plugin implements IChatReport{
     private YamlFile langConfig;
     private API api;
     private UserCache userCache;
+    private PunishmentService punishmentService;
 
     @Setter
     private boolean isDebug;
@@ -110,6 +112,8 @@ public final class ChatReport extends Plugin implements IChatReport{
     @Override
     public void onEnable() {
         // Plugin startup logic
+        this.punishmentService = new PunishmentService(this);
+
         String api_host = getConfig().getString("api.host");
         String api_key = getConfig().getString("api.key");
         isDebug = getConfig().getBoolean("debug");
@@ -231,7 +235,7 @@ public final class ChatReport extends Plugin implements IChatReport{
         List<String> playersList;
         if(isRedisBungee){
             playersList = RedisBungeeAPI.getRedisBungeeApi().getPlayersOnServer(server)
-                    .stream().map(x -> RedisBungeeAPI.getRedisBungeeApi().getNameFromUuid(x))
+                    .stream().map(uuid -> RedisBungeeAPI.getRedisBungeeApi().getNameFromUuid(uuid))
                     .collect(Collectors.toList());
         }else{
             playersList = ProxyServer.getInstance().getServerInfo(server).getPlayers()
@@ -261,6 +265,11 @@ public final class ChatReport extends Plugin implements IChatReport{
                 getLogger().log(Level.INFO, message);
                 break;
         }
+    }
+
+    @Override
+    public PunishmentService getPunishmentService() {
+        return this.punishmentService;
     }
 
     @Override

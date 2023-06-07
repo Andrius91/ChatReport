@@ -4,11 +4,14 @@ import com.google.gson.Gson;
 import icu.yogurt.common.API;
 import icu.yogurt.common.cache.UserCache;
 import icu.yogurt.common.connector.DatabaseConnector;
-import icu.yogurt.common.model.Message;
 import icu.yogurt.common.model.ChatReport;
+import icu.yogurt.common.model.Message;
+import icu.yogurt.common.service.PunishmentService;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -16,6 +19,8 @@ public interface IChatReport {
     Gson gson = new Gson();
 
     void log(int level, String message);
+
+    PunishmentService getPunishmentService();
 
     UserCache getUserCache();
     File getDataFolder();
@@ -51,8 +56,10 @@ public interface IChatReport {
                 log(3, "New reporte created: " + createdChatReport);
             });
         });
+    }
 
-
+    default String nowDate(){
+        return LocalDateTime.now(ZoneOffset.UTC).toString();
     }
 
 
