@@ -30,12 +30,18 @@ public class PunishmentService {
     }
 
     public CompletableFuture<List<Punishment>> getPunishments(String filters) {
+        long startTime = System.currentTimeMillis();
         CompletableFuture<String> result = plugin.getApi().getAsync("/api/punishments" + filters);
 
-        return result.thenApply(x -> {
+
+        return result.thenApplyAsync(x -> {
             List<Punishment> punishmentList;
             try {
                 punishmentList = gson.fromJson(x, punishmentListType);
+                long endTime = System.currentTimeMillis();
+                long elapsedTime = endTime - startTime;
+                int punishmentSize = punishmentList != null ? punishmentList.size() : 0;
+                plugin.log(3, "(punishmentList:" + punishmentSize + ") loaded in "+ elapsedTime + "ms");
             } catch (JsonSyntaxException e) {
                 plugin.log(1, "Failed to parse JSON: " + e.getMessage());
                 return Collections.emptyList();
@@ -51,10 +57,13 @@ public class PunishmentService {
         punishUpdated.setDate(plugin.nowDate());
         String json = gson.toJson(punishUpdated);
         int punishId = punishment.getPunishmentId();
+        long startTime = System.currentTimeMillis();
         plugin.getApi().updateAsync("/api/punishments/" + punishId, json)
                 .thenAcceptAsync(updated -> {
+                    long endTime = System.currentTimeMillis();
+                    long elapsedTime = endTime - startTime;
+                    plugin.log(3, "(updatePunishment:" + punishId + ") updated in "+ elapsedTime + "ms");
                     String command = getPunishmentCommand(punishment);
-
                     plugin.executeCommand(command);
                 })
                 .exceptionally(ex -> {

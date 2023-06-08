@@ -72,7 +72,7 @@ public class PlayerUtils {
 
     public static void sendReportToStaffs(ChatReport plugin, Report report){
         for(ProxiedPlayer player : ProxyServer.getInstance().getPlayers()){
-            if(player.hasPermission("pandoracrp.notify")){
+            if(player.hasPermission("pandoracrp.staff.notify")){
                 List<String> message = plugin.getConfig().getStringList("report.messages.sent-to.staffs").stream().map(
                         x -> x.replace("%reporter%", report.getSender())
                                 .replace("%target%", report.getTarget())
