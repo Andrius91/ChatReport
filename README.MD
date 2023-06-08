@@ -21,3 +21,11 @@ The connection with the REST API allows a fluid and secure communication between
 
 - Efficient management and tracking of incoming reports.
 Ability to analyze and extract useful data from reports.
+
+## Commands
+
+| Command | Description | Permission |
+| --- | --- | --- |
+| `/chatreport (playerName)` | Report a player's messages | pandoracrp.command.chatreport |
+| `/report (playerName)` | Sends a message to the player with the reporting options | pandoracrp.command.report |
+| `/report (playerName) (reason)` | Report the player specifying a reason | pandoracrp.command.report |
