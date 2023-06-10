@@ -118,7 +118,7 @@ public final class ChatReport extends Plugin implements IChatReport{
         String api_key = getConfig().getString("api.key");
         isDebug = getConfig().getBoolean("debug");
         isRedisBungee = config.getBoolean("use-redis-bungee");
-        boolean auto_punisher = punishmentConfig.getBoolean("punishment.enabled");
+        boolean auto_punisher = punishmentConfig.getBoolean("punishment.task");
 
         if(!api_host.isEmpty() && !api_key.isEmpty()){
             api = new API(api_host, api_key);

@@ -1,6 +1,6 @@
 punishment:
-  # Turn auto punisher on or off
-  enabled: true
+  # Turn auto punisher task on or off
+  task: true
   events:
     on-join: ["MUTE", "WARN"]
     task: ["BAN", "UN_BAN"]
