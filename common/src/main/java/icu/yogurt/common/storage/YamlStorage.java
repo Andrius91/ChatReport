@@ -6,7 +6,10 @@ import icu.yogurt.common.model.Message;
 import lombok.RequiredArgsConstructor;
 import org.simpleyaml.configuration.file.YamlFile;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,9 +62,7 @@ public class YamlStorage implements Storage {
     @Override
     public List<Message> getMessages(String playerName) {
         YamlFile config = Config.getPlayerConfig(playerName);
-
         List<Object> messageList = (List<Object>) config.getList("messages");
-
         return messageList.stream()
                 .filter(obj -> obj instanceof Map)
                 .map(obj -> (Map<String, Object>) obj)
@@ -87,7 +88,7 @@ public class YamlStorage implements Storage {
     @Override
     public String getUserUUID(String username) {
         YamlFile config = Config.getPlayerConfig(username);
-        return config.getString("uuid");
+        return config != null ? config.getString("uuid") : "0";
     }
 
     @Override

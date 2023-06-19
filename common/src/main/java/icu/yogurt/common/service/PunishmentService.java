@@ -68,6 +68,7 @@ public class PunishmentService {
                 })
                 .exceptionally(ex -> {
                     plugin.log(1, "Failed to update punishment: " + ex.getMessage());
+                    ex.printStackTrace();
                     return null;
                 });
     }

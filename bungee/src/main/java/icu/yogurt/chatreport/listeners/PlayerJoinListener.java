@@ -39,6 +39,10 @@ public class PlayerJoinListener implements Listener {
             String playerName = player.getName();
             String currentUUID = player.getUniqueId().toString();
             Storage storage = plugin.getStorage();
+
+            // Check if player has punishment
+            checkIfPlayerHasPunishment(playerName);
+
             if(storage instanceof YamlStorage){
                 YamlFile config = Config.getPlayerConfig(playerName);
 
@@ -50,6 +54,7 @@ public class PlayerJoinListener implements Listener {
                 config.set("uuid", currentUUID);
 
                 Config.reloadPlayerConfig(playerName);
+
                 return;
             }
 
@@ -65,8 +70,6 @@ public class PlayerJoinListener implements Listener {
             // Create user in the db
             plugin.getDatabase().createUser(userModel);
 
-            // Check if player has punishment
-            checkIfPlayerHasPunishment(playerName);
         });
 
     }
