@@ -29,8 +29,9 @@ public class PunishmentService {
         config = plugin.getPunishmentConfig();
     }
 
-    public CompletableFuture<List<Punishment>> getPunishments(String filters) {
+    public CompletableFuture<List<Punishment>> getPunishments(String filters, int page) {
         long startTime = System.currentTimeMillis();
+        filters = filters + "&page="+ page;
         CompletableFuture<String> result = plugin.getApi().getAsync("/api/punishments" + filters);
 
 
@@ -49,6 +50,9 @@ public class PunishmentService {
 
             return punishmentList != null ? punishmentList : Collections.emptyList();
         });
+    }
+    public CompletableFuture<List<Punishment>> getPunishments(String filters){
+        return getPunishments(filters, 0);
     }
 
     public void updatePunishment(Punishment punishment){

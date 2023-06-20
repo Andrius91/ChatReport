@@ -23,14 +23,16 @@ public abstract class BaseCommand extends Command implements TabExecutor {
     protected final String SUCCESS_REPORT;
     protected final String CORRECT_USAGE;
     protected final String SELF_REPORT;
-    protected String senderName, target;
+    protected String senderName;
+    protected String target;
+
     protected ProxiedPlayer player;
     protected UUID playerUuid;
 
     protected abstract boolean argsValid(String[] args);
     protected abstract void executeAsync(CommandSender sender, String[] args);
 
-    public BaseCommand(ChatReport plugin, CRCommand command) {
+    protected BaseCommand(ChatReport plugin, CRCommand command) {
         super(command.getCommand(), command.getPermission(), command.getAliases().toArray(new String[0]));
         this.plugin = plugin;
         this.cooldownManager = new CooldownManager(plugin);

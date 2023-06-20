@@ -31,6 +31,7 @@ public class PlayerJoinListener implements Listener {
         List<String> filtersList = plugin.getPunishmentConfig().getStringList("punishment.events.on-join");
         this.filters =  "&types=" + String.join(",", filtersList);
     }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onJoin(PostLoginEvent e){
 
