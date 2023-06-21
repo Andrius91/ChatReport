@@ -9,7 +9,8 @@ import icu.yogurt.chatreport.commands.ReportCommand;
 import icu.yogurt.chatreport.listeners.PlayerChatListener;
 import icu.yogurt.chatreport.listeners.PlayerJoinListener;
 import icu.yogurt.chatreport.listeners.ReportListener;
-import icu.yogurt.chatreport.task.PunishmentTask;
+import icu.yogurt.chatreport.task.ActivePlayerPunishmentTask;
+import icu.yogurt.chatreport.task.PunishmentProcessingTask;
 import icu.yogurt.common.API;
 import icu.yogurt.common.cache.UserCache;
 import icu.yogurt.common.config.Config;
@@ -118,7 +119,6 @@ public final class ChatReport extends Plugin implements IChatReport{
         String api_key = getConfig().getString("api.key");
         isDebug = getConfig().getBoolean("debug");
         isRedisBungee = config.getBoolean("use-redis-bungee");
-        boolean auto_punisher = punishmentConfig.getBoolean("punishment.task");
 
         if(!api_host.isEmpty() && !api_key.isEmpty()){
             api = new API(api_host, api_key);
@@ -126,11 +126,14 @@ public final class ChatReport extends Plugin implements IChatReport{
             log(2, "Invalid api host: " + api_host + " and api key: " + api_key);
         }
 
-        // Tasks
-        if(auto_punisher){
-            scheduler.schedule(this, new PunishmentTask(this), 5L, 5L, TimeUnit.SECONDS);
-        }
+        // Load tasks
+
+        loadTasks();
+
+        // Register listeners
         registerListeners();
+
+        // Register commands
         registerCommand();
 
         if(isRedisBungee){
@@ -150,6 +153,18 @@ public final class ChatReport extends Plugin implements IChatReport{
         }
     }
 
+    private void loadTasks(){
+        boolean auto_task = punishmentConfig.getBoolean("punishment.auto-task");
+        boolean auto_on_join = punishmentConfig.getBoolean("punishment.auto-on-join");
+        // Tasks
+        if(auto_task){
+            scheduler.schedule(this, new PunishmentProcessingTask(this), 5L, 5L, TimeUnit.SECONDS);
+        }
+
+        if(auto_on_join){
+            scheduler.schedule(this, new ActivePlayerPunishmentTask(this), 5L, 5L, TimeUnit.SECONDS);
+        }
+    }
     private void loadConfigs(){
         Config.createFolder(this);
         config = new Config().get(this, "config.yml");

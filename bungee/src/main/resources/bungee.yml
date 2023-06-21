@@ -1,4 +1,4 @@
-name: ChatReport
+name: PandoraCRP
 author: AndriusPE
 version: '${project.version}'
 main: icu.yogurt.chatreport.ChatReport

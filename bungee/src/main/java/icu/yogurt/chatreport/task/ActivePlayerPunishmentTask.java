@@ -8,30 +8,20 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.List;
 
-public class PunishmentTask implements Runnable {
+public class ActivePlayerPunishmentTask implements Runnable {
 
     private final PunishmentService service;
-    private final String TASK_FILTERS;
     private final String JOIN_FILTERS;
     private int page;
 
-    public PunishmentTask(ChatReport plugin) {
+    public ActivePlayerPunishmentTask(ChatReport plugin) {
         this.service = plugin.getPunishmentService();
-        List<String> taskFiltersList = plugin.getPunishmentConfig().getStringList("punishment.events.task");
-        List<String> joinFiltersList = plugin.getPunishmentConfig().getStringList("punishment.events.join");
-        TASK_FILTERS =  "?types=" + String.join(",", taskFiltersList);
+        List<String> joinFiltersList = plugin.getPunishmentConfig().getStringList("punishment.types.on-join");
         JOIN_FILTERS = "?types=" + String.join(",", joinFiltersList);
-
     }
 
     @Override
     public void run() {
-        service.getPunishments(TASK_FILTERS).thenAcceptAsync(punishments -> {
-            if (punishments != null && !punishments.isEmpty()) {
-                punishments.forEach(service::updatePunishment);
-            }
-        });
-
         service.getPunishments(JOIN_FILTERS, page).thenAcceptAsync(punishments -> {
             if (!punishments.isEmpty()) {
                 for(Punishment punishment: punishments){
@@ -50,5 +40,4 @@ public class PunishmentTask implements Runnable {
             }
         });
     }
-
 }

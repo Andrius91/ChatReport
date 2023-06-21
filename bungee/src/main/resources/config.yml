@@ -36,7 +36,7 @@ commands:
       - "repo"
 
 report:
-  cooldown: 15
+  cooldown: 15 # In seconds
   messages:
     sent-to:
       success:
