@@ -1,8 +1,8 @@
 package icu.yogurt.chatreport.task;
 
 import icu.yogurt.chatreport.ChatReport;
-import icu.yogurt.common.model.Punishment;
-import icu.yogurt.common.service.PunishmentService;
+import icu.yogurt.chatreport.common.model.Punishment;
+import icu.yogurt.chatreport.common.service.PunishmentService;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

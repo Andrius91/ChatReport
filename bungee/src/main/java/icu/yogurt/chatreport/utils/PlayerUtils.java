@@ -1,8 +1,8 @@
 package icu.yogurt.chatreport.utils;
 
 import icu.yogurt.chatreport.ChatReport;
-import icu.yogurt.common.model.Report;
-import icu.yogurt.common.model.ReportOption;
+import icu.yogurt.chatreport.common.model.Report;
+import icu.yogurt.chatreport.common.model.ReportOption;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;

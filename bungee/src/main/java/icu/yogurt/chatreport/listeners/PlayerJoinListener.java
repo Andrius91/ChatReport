@@ -1,12 +1,12 @@
 package icu.yogurt.chatreport.listeners;
 
 import icu.yogurt.chatreport.ChatReport;
-import icu.yogurt.common.cache.UserCache;
-import icu.yogurt.common.config.Config;
-import icu.yogurt.common.interfaces.Storage;
-import icu.yogurt.common.model.UserModel;
-import icu.yogurt.common.service.PunishmentService;
-import icu.yogurt.common.storage.YamlStorage;
+import icu.yogurt.chatreport.common.cache.UserCache;
+import icu.yogurt.chatreport.common.config.Config;
+import icu.yogurt.chatreport.common.interfaces.Storage;
+import icu.yogurt.chatreport.common.model.UserModel;
+import icu.yogurt.chatreport.common.service.PunishmentService;
+import icu.yogurt.chatreport.common.storage.YamlStorage;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;

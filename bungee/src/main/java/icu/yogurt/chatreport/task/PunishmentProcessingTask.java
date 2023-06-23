@@ -1,7 +1,7 @@
 package icu.yogurt.chatreport.task;
 
 import icu.yogurt.chatreport.ChatReport;
-import icu.yogurt.common.service.PunishmentService;
+import icu.yogurt.chatreport.common.service.PunishmentService;
 
 import java.util.List;
 

@@ -3,8 +3,8 @@ package icu.yogurt.chatreport.commands;
 import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import icu.yogurt.chatreport.ChatReport;
 import icu.yogurt.chatreport.utils.PlayerUtils;
-import icu.yogurt.common.model.CRCommand;
-import icu.yogurt.common.model.Report;
+import icu.yogurt.chatreport.common.model.CRCommand;
+import icu.yogurt.chatreport.common.model.Report;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 

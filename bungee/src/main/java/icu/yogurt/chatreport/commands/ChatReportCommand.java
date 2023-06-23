@@ -2,7 +2,7 @@ package icu.yogurt.chatreport.commands;
 
 import icu.yogurt.chatreport.ChatReport;
 import icu.yogurt.chatreport.utils.PlayerUtils;
-import icu.yogurt.common.model.CRCommand;
+import icu.yogurt.chatreport.common.model.CRCommand;
 import net.md_5.bungee.api.CommandSender;
 
 public class ChatReportCommand extends BaseCommand {
