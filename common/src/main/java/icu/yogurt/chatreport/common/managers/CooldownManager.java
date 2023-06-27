@@ -1,16 +1,16 @@
 package icu.yogurt.chatreport.common.managers;
 
-import icu.yogurt.chatreport.common.interfaces.IChatReport;
+import icu.yogurt.chatreport.common.BasePlugin;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class CooldownManager {
 
-    private final IChatReport plugin;
+    private final BasePlugin plugin;
 
     private final HashMap<UUID, Long> cooldownMap;
-    public CooldownManager(IChatReport plugin){
+    public CooldownManager(BasePlugin plugin){
         this.plugin = plugin;
         this.cooldownMap = new HashMap<>();
     }

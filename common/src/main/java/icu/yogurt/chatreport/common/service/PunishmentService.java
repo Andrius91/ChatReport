@@ -3,7 +3,7 @@ package icu.yogurt.chatreport.common.service;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import icu.yogurt.chatreport.common.interfaces.IChatReport;
+import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.model.ChatReport;
 import icu.yogurt.chatreport.common.model.Punishment;
 import icu.yogurt.chatreport.common.model.enums.PunishStatus;
@@ -18,12 +18,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class PunishmentService {
 
-    private final IChatReport plugin;
+    private final BasePlugin plugin;
     private final Gson gson;
     private final Type punishmentListType;
     private final YamlFile config;
 
-    public PunishmentService(IChatReport plugin){
+    public PunishmentService(BasePlugin plugin){
         this.plugin = plugin;
         this.gson = plugin.gson;
         this.punishmentListType = new TypeToken<List<Punishment>>(){}.getType();

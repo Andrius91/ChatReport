@@ -1,20 +1,18 @@
 package icu.yogurt.chatreport.common.storage;
 
-import icu.yogurt.chatreport.common.interfaces.Storage;
 import icu.yogurt.chatreport.common.config.Config;
+import icu.yogurt.chatreport.common.interfaces.IStorage;
 import icu.yogurt.chatreport.common.model.Message;
 import lombok.RequiredArgsConstructor;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
-public class YamlStorage implements Storage {
+public class YamlStorage implements IStorage {
 
     @Override
     public boolean playerExists(String player) {
@@ -33,12 +31,9 @@ public class YamlStorage implements Storage {
         String player = message.getSender();
         YamlFile config = Config.getPlayerConfig(player);
 
-        List<Map<String, Object>> messages = getMessages(player)
-                .stream()
-                .map(this::messageToMap)
-                .collect(Collectors.toList());
+        List<Message> messages = getMessages(player);
 
-        messages.add(messageToMap(message));
+        messages.add(message);
 
         if (messages.size() > 25) {
             messages.remove(0); // remove the oldest message
@@ -50,27 +45,14 @@ public class YamlStorage implements Storage {
     }
 
 
-    private Map<String, Object> messageToMap(Message message) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("message", message.getMessage());
-        map.put("server", message.getServer());
-        map.put("sender", message.getSender());
-        map.put("date", message.getDate());
-        return map;
-    }
 
     @Override
     public List<Message> getMessages(String playerName) {
         YamlFile config = Config.getPlayerConfig(playerName);
-        List<Object> messageList = (List<Object>) config.getList("messages");
+        List<?> messageList = config.getList("messages");
         return messageList.stream()
-                .filter(obj -> obj instanceof Map)
-                .map(obj -> (Map<String, Object>) obj)
-                .map(map -> new Message((String) map.get("message"),
-                        (String) map.get("server"),
-                        (String) map.get("sender"),
-                        (String) map.get("date")
-                ))
+                .filter(object -> object instanceof Message)
+                .map(object -> (Message) object)
                 .collect(Collectors.toList());
     }
 

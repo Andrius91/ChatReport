@@ -1,6 +1,6 @@
 package icu.yogurt.chatreport.common.connector;
 
-import icu.yogurt.chatreport.common.interfaces.IChatReport;
+import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.model.UserModel;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,9 +11,9 @@ public class DatabaseConnector {
     private final String user;
     private final String password;
 
-    private final IChatReport plugin;
+    private final BasePlugin plugin;
 
-    public DatabaseConnector(String url, String user, String password, IChatReport plugin) {
+    public DatabaseConnector(String url, String user, String password, BasePlugin plugin) {
         this.url = url;
         this.user = user;
         this.password = password;
@@ -39,7 +39,7 @@ public class DatabaseConnector {
             plugin.log(1, "Error during creating table: " + e.getMessage());
         }
     }
-
+    @SuppressWarnings("unused")
     public boolean verifyUserByUUID(String uuid) {
         try (Connection connection = getConnection()) {
             String query = "SELECT * FROM users WHERE uuid = ?";
@@ -54,6 +54,7 @@ public class DatabaseConnector {
             return false;
         }
     }
+    @SuppressWarnings("unused")
     public boolean verifyUserByUsername(String name) {
         try (Connection connection = getConnection()) {
             String query = "SELECT * FROM users WHERE username = ?";
@@ -69,6 +70,7 @@ public class DatabaseConnector {
         }
     }
 
+    @SuppressWarnings("unused")
     public UserModel getUserByUUID(String uuid) {
         try (Connection connection = getConnection()) {
             String query = "SELECT * FROM users WHERE uuid = ? ORDER BY creationDate DESC LIMIT 1";

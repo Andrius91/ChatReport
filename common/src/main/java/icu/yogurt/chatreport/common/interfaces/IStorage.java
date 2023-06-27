@@ -4,7 +4,7 @@ import icu.yogurt.chatreport.common.model.Message;
 
 import java.util.List;
 
-public interface Storage {
+public interface IStorage {
 
 
 
@@ -33,6 +33,7 @@ public interface Storage {
      * @param message message
      */
     void saveMessage(Message message);
+    @SuppressWarnings("unused")
     void saveMessages(List<Message> messages);
 
 

@@ -9,11 +9,12 @@ database:
   password: "root"
   url: "jdbc:mysql://localhost:3306/dbname"
 storage:
-  type: REDIS #YAML | REDIS | DISABLED
+  type: REDIS #YAML | REDIS
   ssl: false
   url: "redis://user:password@localhost:6379/0"
 
 messages:
+  save-messages: true
   save-commands: true
   commands:
     - "msg"
@@ -50,10 +51,7 @@ report:
         - "&fReason: &6%reason%"
         - "&fServer: &6%server%"
         - "&r "
-    server-component:
-      text: "&6&o(Click here to go)"
-      hover: "&7Click here to go to the server."
-      command: "/server %server%"
+        - "text: &6&o(Click here to go) hover:&7Click here to go to the server. action:RUN_COMMAND:/server %server%"
   header: |-
     &e&lSelect an option:
     &e

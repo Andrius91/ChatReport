@@ -1,6 +1,6 @@
 package icu.yogurt.chatreport.common.config;
 
-import icu.yogurt.chatreport.common.interfaces.IChatReport;
+import icu.yogurt.chatreport.common.BasePlugin;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.io.File;
@@ -16,7 +16,7 @@ public class Config{
 
     private static final String PLAYERS_FOLDER = "players";
 
-    public YamlFile get(IChatReport plugin, String fileName) {
+    public YamlFile get(BasePlugin plugin, String fileName) {
         YamlFile yamlFile = null;
         File conf = new File(plugin.getDataFolder(), fileName);
         if (!conf.exists()) {
@@ -41,7 +41,9 @@ public class Config{
         return yamlFile;
     }
 
-    public static void createFolder(IChatReport plugin) {
+    @SuppressWarnings("unused")
+    @Deprecated
+    public static void createFolder(BasePlugin plugin) {
         File dataFolder = plugin.getDataFolder();
         if(!dataFolder.exists()){
             dataFolder.mkdir();
@@ -61,7 +63,7 @@ public class Config{
         }
     }
 
-    public static YamlFile createPlayerConfig(IChatReport plugin, String player) {
+    public static YamlFile createPlayerConfig(BasePlugin plugin, String player) {
         YamlFile config = new Config().get(plugin,  PLAYERS_FOLDER + "/" + player + ".yml");
         config.set("uuid", "");
 

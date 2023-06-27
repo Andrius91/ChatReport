@@ -3,8 +3,8 @@ package icu.yogurt.chatreport.common.cache;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
+import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.connector.RedisConnector;
-import icu.yogurt.chatreport.common.interfaces.IChatReport;
 import icu.yogurt.chatreport.common.model.UserModel;
 import redis.clients.jedis.Jedis;
 
@@ -12,14 +12,14 @@ import java.util.concurrent.TimeUnit;
 
 public class UserCache {
 
-    private final IChatReport plugin;
+    private final BasePlugin plugin;
     private final Gson gson;
     private final RedisConnector redisConnector;
     private final String EXISTS_KEY = "chat-report:exists:";
 
     private final Cache<String, String> REPORT_CACHE;
 
-    public UserCache(IChatReport plugin, RedisConnector redisConnector) {
+    public UserCache(BasePlugin plugin, RedisConnector redisConnector) {
         this.plugin = plugin;
         this.gson = plugin.gson;
         this.redisConnector = redisConnector;

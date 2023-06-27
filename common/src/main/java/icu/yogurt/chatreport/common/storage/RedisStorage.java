@@ -1,10 +1,10 @@
 package icu.yogurt.chatreport.common.storage;
 
 import com.google.gson.Gson;
-import icu.yogurt.chatreport.common.connector.RedisConnector;
-import icu.yogurt.chatreport.common.interfaces.IChatReport;
-import icu.yogurt.chatreport.common.interfaces.Storage;
+import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.cache.UserCache;
+import icu.yogurt.chatreport.common.connector.RedisConnector;
+import icu.yogurt.chatreport.common.interfaces.IStorage;
 import icu.yogurt.chatreport.common.model.Message;
 import icu.yogurt.chatreport.common.model.UserModel;
 import lombok.SneakyThrows;
@@ -17,15 +17,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RedisStorage implements Storage {
+public class RedisStorage implements IStorage {
 
-    private final IChatReport plugin;
+    private final BasePlugin plugin;
     private final Gson gson = new Gson();
     private final RedisConnector redisConnector;
     private final String REDIS_KEY = "chat-report:";
     private final UserCache userCache;
 
-    public RedisStorage(IChatReport plugin, RedisConnector redisConnector) {
+    public RedisStorage(BasePlugin plugin, RedisConnector redisConnector) {
         this.plugin = plugin;
         this.redisConnector = redisConnector;
         this.redisConnector.connect();
