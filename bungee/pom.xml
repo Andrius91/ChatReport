@@ -34,7 +34,6 @@
             <type>javadoc</type>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>icu.yogurt</groupId>
             <artifactId>common</artifactId>
