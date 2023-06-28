@@ -10,8 +10,8 @@
   <name>ChatReport</name>
 
   <modules>
-    <module>bungee</module>
     <module>common</module>
+    <module>bungee</module>
   </modules>
 
   <properties>
