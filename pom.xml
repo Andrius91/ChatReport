@@ -46,5 +46,11 @@
       <version>1.8.4</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.proxiodev.redisbungee</groupId>
+      <artifactId>RedisBungee-Bungee</artifactId>
+      <version>0.11.2</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>
