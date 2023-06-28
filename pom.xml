@@ -41,7 +41,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>me.carleslc.Simple-YAML</groupId>
+      <groupId>com.github.Carleslc</groupId>
       <artifactId>Simple-Yaml</artifactId>
       <version>1.8.4</version>
       <scope>provided</scope>
