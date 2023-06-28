@@ -26,7 +26,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B -X package --file pom.xml
     - name: Archive artifacts
       uses: actions/upload-artifact@v3
       with:
