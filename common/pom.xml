@@ -27,6 +27,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.proxiodev.redisbungee</groupId>
+            <artifactId>RedisBungee-Bungee</artifactId>
+            <version>0.11.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>31.1-jre</version>
@@ -73,6 +79,12 @@
             <artifactId>annotations</artifactId>
             <version>1.2.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-api</artifactId>
+            <version>4.3.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
