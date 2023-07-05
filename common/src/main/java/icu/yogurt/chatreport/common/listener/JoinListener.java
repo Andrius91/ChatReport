@@ -5,13 +5,15 @@ import icu.yogurt.chatreport.common.cache.UserCache;
 import icu.yogurt.chatreport.common.config.Config;
 import icu.yogurt.chatreport.common.interfaces.IPlayer;
 import icu.yogurt.chatreport.common.interfaces.IStorage;
-import icu.yogurt.chatreport.common.model.UserModel;
+import icu.yogurt.chatreport.common.model.User;
 import icu.yogurt.chatreport.common.service.PunishmentService;
 import icu.yogurt.chatreport.common.storage.YamlStorage;
 import org.simpleyaml.configuration.file.YamlFile;
 
 import java.util.Collections;
 import java.util.List;
+
+import static icu.yogurt.chatreport.common.ConfigKeys.TYPES_ON_JOIN;
 
 public abstract class JoinListener {
     private final BasePlugin plugin;
@@ -21,9 +23,9 @@ public abstract class JoinListener {
 
     public JoinListener(BasePlugin plugin) {
         this.plugin = plugin;
-        this.userCache = plugin.getUserCache();
+        this.userCache = plugin.getStorageManager().getUserCache();
         this.service = plugin.getPunishmentService();
-        List<String> filtersList = plugin.getPunishmentConfig().getStringList("punishment.events.on-join");
+        List<String> filtersList = TYPES_ON_JOIN.getAsStringList();
         this.filters =  "&types=" + String.join(",", filtersList);
     }
 
@@ -48,13 +50,13 @@ public abstract class JoinListener {
                 config.set("uuid", currentUUID);
                 Config.reloadPlayerConfig(playerName);
             } else {
-                UserModel cachedUserModel = userCache.getCachedUserModel(playerName);
-                if (cachedUserModel == null) {
-                    UserModel userModel = new UserModel(playerName, currentUUID, null);
-                    plugin.getUserCache().cacheUserModel(playerName, userModel);
+                User cachedUser = userCache.getCachedUserModel(playerName);
+                if (cachedUser == null) {
+                    User user = new User(playerName, currentUUID, null);
+                    userCache.cacheUserModel(playerName, user);
 
                     // Create user in the db
-                    plugin.getDatabase().createUser(userModel);
+                    plugin.getDatabase().createUser(user);
                 }
             }
         });
@@ -62,6 +64,10 @@ public abstract class JoinListener {
 
     private void checkIfPlayerHasPunishment(String playerName){
         String filters = "?target=" + playerName + this.filters;
+        if(plugin.getApi() == null){
+            plugin.log(3, "Failed to connect to api: |" + filters+"|");
+            return;
+        }
         service.getPunishments(filters).thenAcceptAsync(punishments -> {
             if(punishments != null && !punishments.isEmpty()){
                 punishments.forEach(plugin.getPunishmentService()::updatePunishment);

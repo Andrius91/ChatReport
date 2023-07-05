@@ -12,15 +12,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import static icu.yogurt.chatreport.common.ConfigKeys.*;
+
 public abstract class BaseCommand {
     protected final CooldownManager cooldownManager;
     protected final BasePlugin plugin;
     @Getter
     protected final CRCommand crCommand;
-    protected final String PLAYER_NOT_FOUND;
-    protected final String SUCCESS_REPORT;
-    protected final String CORRECT_USAGE;
-    protected final String SELF_REPORT;
     protected String senderName;
     protected String target;
     protected UUID playerUuid;
@@ -31,27 +29,22 @@ public abstract class BaseCommand {
 
     protected BaseCommand(BasePlugin plugin) {
         this.plugin = plugin;
-        this.cooldownManager = new CooldownManager(plugin);
+        this.cooldownManager = new CooldownManager();
         this.crCommand = this.getCRCommand(getCommandName());
-        PLAYER_NOT_FOUND = plugin.getLangConfig().getString("lang.player-does-not-exist");
-        SUCCESS_REPORT = plugin.getLangConfig().getString("lang.success-report");
-        CORRECT_USAGE = plugin.getLangConfig().getString("lang.correct-usage")
-                .replace("%command_usage%", crCommand.getUsage());
-        SELF_REPORT = plugin.getLangConfig().getString("lang.self-report");
     }
 
     public void execute(IPlayer sender, String[] args) {
-
         if(argsValid(args)){
-            sender.sendMessage(CORRECT_USAGE);
+            sender.sendMessage(CORRECT_USAGE.replace("%command_usage%", crCommand.getUsage()));
             return;
         }
 
         this.playerUuid = sender.getUUID();
 
+
         // cooldown
         if(cooldownManager.hasCooldown(playerUuid) && !sender.hasPermission("pandoracrp.bypass.cooldown")){
-            sender.sendMessage(plugin.getLangConfig().getString("lang.has-cooldown")
+            sender.sendMessage(HAS_COOLDOWN
                     .replace("%time%", cooldownManager.getTimeLeftStr(playerUuid)));
             return;
         }
@@ -116,4 +109,5 @@ public abstract class BaseCommand {
 
         return new CRCommand(name, usage, permission, aliases);
     }
+
 }

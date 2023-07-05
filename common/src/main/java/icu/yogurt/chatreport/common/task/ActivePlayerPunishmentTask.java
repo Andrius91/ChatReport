@@ -7,6 +7,8 @@ import icu.yogurt.chatreport.common.service.PunishmentService;
 
 import java.util.List;
 
+import static icu.yogurt.chatreport.common.ConfigKeys.TYPES_ON_JOIN;
+
 public class ActivePlayerPunishmentTask implements Runnable {
 
     private final BasePlugin plugin;
@@ -17,16 +19,12 @@ public class ActivePlayerPunishmentTask implements Runnable {
     public ActivePlayerPunishmentTask(BasePlugin plugin) {
         this.service = plugin.getPunishmentService();
         this.plugin = plugin;
-        List<String> joinFiltersList = plugin.getPunishmentConfig().getStringList("punishment.types.on-join");
+        List<String> joinFiltersList = TYPES_ON_JOIN.getAsStringList();
         JOIN_FILTERS = "?types=" + String.join(",", joinFiltersList);
     }
 
     @Override
     public void run() {
-        if(plugin.getApi() == null){
-            return;
-        }
-
         service.getPunishments(JOIN_FILTERS, page).thenAcceptAsync(punishments -> {
             if (!punishments.isEmpty()) {
                 for(Punishment punishment: punishments){

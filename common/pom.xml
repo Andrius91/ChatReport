@@ -17,14 +17,12 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <repositories>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -36,12 +34,6 @@
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
             <version>4.4.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.26</version>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.zaxxer</groupId>
@@ -73,6 +65,12 @@
             <artifactId>annotations</artifactId>
             <version>1.2.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-api</artifactId>
+            <version>4.3.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

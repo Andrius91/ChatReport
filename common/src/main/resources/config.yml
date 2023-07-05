@@ -2,17 +2,20 @@ debug: false
 use-redis-bungee: false
 api:
   host: "http://127.0.0.1:8080"
-  key: ""
+  key: "YOUR_API_KEY"
 database:
-  type: "MYSQL" #MYSQL
+  type: "MYSQL" #MYSQL | SQLITE
   user: "root"
   password: "root"
   url: "jdbc:mysql://localhost:3306/dbname"
 storage:
-  type: REDIS #YAML | REDIS
-  ssl: false
+  type: "REDIS" #YAML | REDIS
   url: "redis://user:password@localhost:6379/0"
-
+settings:
+  disable-servers:
+    - "server1"
+  disable-nicks:
+    - "Klayzx"
 messages:
   save-messages: true
   save-commands: true
@@ -24,12 +27,14 @@ messages:
 
 commands:
   chat-report:
+    enabled: true
     command: "chatreport"
     usage: "/chatreport (playerName)"
     permission: "pandoracrp.command.chatreport"
     aliases:
       - "crp"
   report:
+    enabled: true
     command: "report"
     usage: "/report (playerName)"
     permission: "pandoracrp.command.report"
@@ -38,10 +43,9 @@ commands:
 
 report:
   cooldown: 15 # In seconds
+  max-reason-chars: 36
   messages:
     sent-to:
-      success:
-        - "&aYou have successfully reported %target% Reason: %reason%"
       staffs:
         - "&r "
         - "&c&l¡NEW REPORT!"
@@ -56,9 +60,12 @@ report:
     &e&lSelect an option:
     &e
   options:
-    - text: '&8   ► &b&nHacks'
+    - ==: ReportOption
+      text: '&8   ► &b&nHacks'
       hover: '&7Report %target% for hacks'
       command: '/report %target% Hacks'
-    - text: '&8   ► &b&nChat infraction'
+    - ==: ReportOption
+      text: '&8   ► &b&nChat infraction'
       hover: '&7Report %target% for chat infractions'
       command: '/chatreport %target%'
+

@@ -1,124 +1,78 @@
 package icu.yogurt.chatreport.common.connector;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import icu.yogurt.chatreport.common.BasePlugin;
-import icu.yogurt.chatreport.common.model.UserModel;
-import org.jetbrains.annotations.Nullable;
+import lombok.SneakyThrows;
 
-import java.sql.*;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static icu.yogurt.chatreport.common.ConfigKeys.DATABASE_PASSWORD;
+import static icu.yogurt.chatreport.common.ConfigKeys.DATABASE_USER;
 
 public class DatabaseConnector {
-    private final String url;
-    private final String user;
-    private final String password;
-
+    private final HikariDataSource ds;
     private final BasePlugin plugin;
-
-    public DatabaseConnector(String url, String user, String password, BasePlugin plugin) {
-        this.url = url;
-        this.user = user;
-        this.password = password;
+    public DatabaseConnector(BasePlugin plugin) {
         this.plugin = plugin;
-        createTableIfNotExist();
+        boolean isSQLite = plugin.getConfig()
+                .getString("database.type")
+                .equalsIgnoreCase("SQLITE");
+
+        HikariConfig config = new HikariConfig();
+
+        if (isSQLite) {
+            config.setDriverClassName("org.sqlite.JDBC");
+            config.setJdbcUrl(buildSQLiteJdbcUrl());
+        } else {
+            config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            config.setJdbcUrl(buildMySqlJdbcUrl());
+            config.setUsername(DATABASE_USER.get());
+            config.setPassword(DATABASE_PASSWORD.get());
+        }
+
+        config.setMaximumPoolSize(10);
+        config.setMinimumIdle(2);
+
+        this.ds = new HikariDataSource(config);
+    }
+
+    @SneakyThrows
+    private String buildSQLiteJdbcUrl() {
+        File databaseFile = createDatabaseFile();
+        return "jdbc:sqlite:" + databaseFile.getAbsolutePath();
+    }
+
+    private String buildMySqlJdbcUrl() {
+        return plugin.getConfig().getString("database.url");
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        return ds.getConnection();
     }
 
-    public void createTableIfNotExist() {
-        try (Connection connection = getConnection()) {
-            String query = "CREATE TABLE IF NOT EXISTS users(" +
-                    "username VARCHAR(16)," +
-                    "uuid VARCHAR(36)," +
-                    "creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP," +
-                    "PRIMARY KEY (uuid)" +
-                    ")";
-            Statement statement = connection.createStatement();
-            statement.execute(query);
-        } catch (SQLException e) {
-            plugin.log(1, "Error during creating table: " + e.getMessage());
-        }
-    }
-    @SuppressWarnings("unused")
-    public boolean verifyUserByUUID(String uuid) {
-        try (Connection connection = getConnection()) {
-            String query = "SELECT * FROM users WHERE uuid = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, uuid);
-
-            ResultSet result = statement.executeQuery();
-
-            return result.next();
-        } catch (SQLException e) {
-            plugin.log(1, "Error during verifying user: " + e.getMessage());
-            return false;
-        }
-    }
-    @SuppressWarnings("unused")
-    public boolean verifyUserByUsername(String name) {
-        try (Connection connection = getConnection()) {
-            String query = "SELECT * FROM users WHERE username = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, name);
-
-            ResultSet result = statement.executeQuery();
-
-            return result.next();
-        } catch (SQLException e) {
-            plugin.log(1, "Error during verifying user: " + e.getMessage());
-            return false;
+    public void closeDataSource() {
+        if (ds != null) {
+            ds.close();
         }
     }
 
-    @SuppressWarnings("unused")
-    public UserModel getUserByUUID(String uuid) {
-        try (Connection connection = getConnection()) {
-            String query = "SELECT * FROM users WHERE uuid = ? ORDER BY creationDate DESC LIMIT 1";
-            return getUserModel(uuid, connection, query);
-        } catch (SQLException e) {
-            plugin.log(1, "Error during getting user: " + e.getMessage());
-            return null;
+    private File createDatabaseFile() {
+        File databaseFile = new File(plugin.getDataFolder(), "database.db");
+        try {
+            if (!databaseFile.exists()) {
+                boolean created = databaseFile.createNewFile();
+                if (!created) {
+                    throw new RuntimeException("Failed to create SQLite database file: " + databaseFile.getAbsolutePath());
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error creating SQLite database file: " + databaseFile.getAbsolutePath(), e);
         }
-    }
-
-    public UserModel getUserByUsername(String username) {
-        try (Connection connection = getConnection()) {
-            String query = "SELECT * FROM users WHERE username = ? ORDER BY creationDate DESC LIMIT 1";
-            return getUserModel(username, connection, query);
-        } catch (SQLException e) {
-            plugin.log(1, "Error during getting user: " + e.getMessage());
-            return null;
-        }
-    }
-
-    @Nullable
-    private UserModel getUserModel(String param, Connection connection, String query) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(query);
-        statement.setString(1, param);
-
-        ResultSet result = statement.executeQuery();
-
-        if (result.next()) {
-            return new UserModel(result.getString("username"),
-                    result.getString("uuid"),
-                    null);
-        } else {
-            return null;
-        }
-    }
-
-    public void createUser(UserModel user) {
-        try (Connection connection = getConnection()) {
-            String query = "INSERT INTO users (username, uuid) VALUES (?, ?)";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setString(1, user.getUsername());
-            statement.setString(2, user.getUuid());
-
-            statement.executeUpdate();
-        } catch (SQLIntegrityConstraintViolationException ignored){
-
-        } catch (SQLException e) {
-            plugin.log(1,"Error during creating user: " + e.getMessage());
-        }
+        return databaseFile;
     }
 }
+

@@ -1,70 +1,56 @@
 package icu.yogurt.chatreport.common.config;
 
 import icu.yogurt.chatreport.common.BasePlugin;
+import lombok.SneakyThrows;
 import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Config{
+public class Config {
 
     private static final Map<String, YamlFile> playerConfigMap = new HashMap<>();
 
     private static final String PLAYERS_FOLDER = "players";
 
-    public YamlFile get(BasePlugin plugin, String fileName) {
-        YamlFile yamlFile = null;
-        File conf = new File(plugin.getDataFolder(), fileName);
-        if (!conf.exists()) {
-            try {
-                InputStream in = Config.class.getResourceAsStream("/" + fileName);
-                if(in != null){
-                    Files.copy(in, conf.toPath());
-                }else{
-                    conf.createNewFile();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
+    @SneakyThrows
+    public YamlFile get(BasePlugin plugin, String fileName){
+        YamlFile yamlFile = new YamlFile(new File(plugin.getDataFolder(), fileName));
+
+        if(!yamlFile.exists()){
+            InputStream in = getClass().getResourceAsStream("/" + fileName);
+            if(in != null){
+                Files.copy(in, Paths.get(yamlFile.getFilePath()));
+            } else {
+                yamlFile.createNewFile();
+            }
         }
-        try {
-            yamlFile = new YamlFile(conf.getPath());
-            yamlFile.load();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        yamlFile.load();
+        yamlFile.options().quoteStyleDefaults().setQuoteStyle(String.class, QuoteStyle.DOUBLE);
+        yamlFile.options().quoteStyleDefaults().setQuoteStyle(List.class, QuoteStyle.DOUBLE);
+
         return yamlFile;
     }
 
-    @SuppressWarnings("unused")
-    @Deprecated
-    public static void createFolder(BasePlugin plugin) {
-        File dataFolder = plugin.getDataFolder();
-        if(!dataFolder.exists()){
-            dataFolder.mkdir();
-        }
-        File folder = new File(dataFolder, PLAYERS_FOLDER);
-        if(!folder.exists()) {
-            folder.mkdirs();
-        }
-    }
 
-    public static void reloadConfig(YamlFile configuration) {
-        try {
+    public static void reloadConfig(YamlFile configuration){
+        try{
             configuration.save();
             configuration.load();
-        } catch (Exception e) {
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public static YamlFile createPlayerConfig(BasePlugin plugin, String player) {
-        YamlFile config = new Config().get(plugin,  PLAYERS_FOLDER + "/" + player + ".yml");
+    public static YamlFile createPlayerConfig(BasePlugin plugin, String player){
+        YamlFile config = new Config().get(plugin, PLAYERS_FOLDER + File.separator + player + ".yml");
         config.set("uuid", "");
 
         playerConfigMap.put(player, config);

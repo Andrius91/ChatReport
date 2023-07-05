@@ -3,12 +3,13 @@ package icu.yogurt.chatreport.common.commands;
 import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.interfaces.IPlayer;
 
+import static icu.yogurt.chatreport.common.ConfigKeys.NO_MESSAGES_FOUND;
+import static icu.yogurt.chatreport.common.ConfigKeys.SUCCESS_REPORT;
+
 public class ChatReportCommand extends BaseCommand{
 
-    private final String NO_MESSAGES_FOUND;
     public ChatReportCommand(BasePlugin plugin) {
         super(plugin);
-        this.NO_MESSAGES_FOUND = plugin.getLangConfig().getString("lang.no-messages-found");
     }
 
     @Override
@@ -31,7 +32,7 @@ public class ChatReportCommand extends BaseCommand{
         }
 
         sender.sendMessage(SUCCESS_REPORT);
-        plugin.createNewReport(senderName, target);
+        plugin.getChatReportService().createNewReport(senderName, target);
 
         // Cooldown
         cooldownManager.addPlayer(playerUuid);

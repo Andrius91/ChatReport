@@ -12,7 +12,7 @@ public abstract class RedisListener {
     public void process(String reportJson) {
         Report report = plugin.gson.fromJson(reportJson, Report.class);
         if (report != null) {
-            plugin.sendReportToStaffs(report, false);
+            plugin.getReportService().sendReportToStaffs(report, false);
         }
     }
 }

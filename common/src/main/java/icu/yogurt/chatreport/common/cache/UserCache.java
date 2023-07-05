@@ -5,7 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.connector.RedisConnector;
-import icu.yogurt.chatreport.common.model.UserModel;
+import icu.yogurt.chatreport.common.model.User;
 import redis.clients.jedis.Jedis;
 
 import java.util.concurrent.TimeUnit;
@@ -28,23 +28,23 @@ public class UserCache {
                 .build();
     }
 
-    private synchronized RedisConnector getRedisConnector() {
+    private RedisConnector getRedisConnector() {
         return redisConnector;
     }
 
-    public UserModel getCachedUserModel(String username) {
+    public User getCachedUserModel(String username) {
         try (Jedis jedis = getRedisConnector().getResource()) {
             String json = jedis.get(EXISTS_KEY + username.toLowerCase());
-            return json != null ? gson.fromJson(json, UserModel.class) : null;
+            return json != null ? gson.fromJson(json, User.class) : null;
         } catch (Exception e) {
             plugin.log(1, "Failed to get cached UserModel: " + e.getMessage());
             return null;
         }
     }
 
-    public void cacheUserModel(String username, UserModel userModel) {
+    public void cacheUserModel(String username, User user) {
         try (Jedis jedis = getRedisConnector().getResource()) {
-            String json = gson.toJson(userModel);
+            String json = gson.toJson(user);
             jedis.setex(EXISTS_KEY + username.toLowerCase(), 24 * 60 * 60, json);
         } catch (Exception e) {
             plugin.log(1, "Failed to cache UserModel: " + e.getMessage());

@@ -5,6 +5,7 @@ import icu.yogurt.chatreport.common.interfaces.IStorage;
 import icu.yogurt.chatreport.common.model.Message;
 import lombok.RequiredArgsConstructor;
 import org.simpleyaml.configuration.file.YamlFile;
+import org.simpleyaml.configuration.implementation.api.QuoteStyle;
 
 import java.util.Comparator;
 import java.util.List;
@@ -39,7 +40,7 @@ public class YamlStorage implements IStorage {
             messages.remove(0); // remove the oldest message
         }
 
-        config.set("messages", messages);
+        config.set("messages", messages, QuoteStyle.PLAIN);
 
         Config.reloadPlayerConfig(player);
     }

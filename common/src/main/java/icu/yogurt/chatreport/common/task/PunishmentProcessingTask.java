@@ -5,24 +5,21 @@ import icu.yogurt.chatreport.common.service.PunishmentService;
 
 import java.util.List;
 
+import static icu.yogurt.chatreport.common.ConfigKeys.TYPES_TASK;
+
 public class PunishmentProcessingTask implements Runnable {
 
-    private final BasePlugin plugin;
     private final PunishmentService service;
     private final String TASK_FILTERS;
 
     public PunishmentProcessingTask(BasePlugin plugin) {
-        this.plugin = plugin;
         this.service = plugin.getPunishmentService();
-        List<String> taskFiltersList = plugin.getPunishmentConfig().getStringList("punishment.types.task");
+        List<String> taskFiltersList = TYPES_TASK.getAsStringList();
         TASK_FILTERS =  "?types=" + String.join(",", taskFiltersList);
     }
 
     @Override
     public void run() {
-        if(plugin.getApi() == null){
-            return;
-        }
         service.getPunishments(TASK_FILTERS).thenAcceptAsync(punishments -> {
             if (punishments != null && !punishments.isEmpty()) {
                 punishments.forEach(service::updatePunishment);

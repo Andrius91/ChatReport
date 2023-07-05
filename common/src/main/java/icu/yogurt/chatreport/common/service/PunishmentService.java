@@ -94,10 +94,18 @@ public class PunishmentService {
         String unitString = getUnit(unit);
         String time = timeValue + unitString;
 
-        int index = chatReport == null ? 0 : 1;
+        String commandKey = chatReport == null ? "no_report_id" : "with_report_id";
 
-        List<String> commandsList = config.getStringList("punishment.commands." + type.name());
-        String path = commandsList.get(index);
+        String path = null;
+        if(config.contains("punishment.commands." + type.name() + "." + commandKey)) {
+            path = config.getString("punishment.commands." + type.name() + "." + commandKey);
+        } else if (config.contains("punishment.commands." + type.name() + ".default")) {
+            path = config.getString("punishment.commands." + type.name() + ".default");
+        }
+
+        if(path == null) {
+            throw new RuntimeException("No command found for punishment type: " + type.name());
+        }
 
         StringBuilder sb = new StringBuilder(path);
         replacePlaceholder(sb, "%target%", target);
@@ -109,6 +117,7 @@ public class PunishmentService {
 
         return sb.toString();
     }
+
 
     private String getUnit(PunishUnit unit) {
         String unitPath = "punishment.units." + unit.name();

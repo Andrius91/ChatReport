@@ -6,11 +6,22 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
+import static icu.yogurt.chatreport.common.ConfigKeys.API_HOST;
+import static icu.yogurt.chatreport.common.ConfigKeys.API_KEY;
+
 public class API {
     private final OkHttpClient client;
     private final String baseUrl;
 
-    public API(String baseUrl, String apiKey) {
+    public API() {
+
+        String apiKey = API_KEY.get();
+        this.baseUrl = API_HOST.get();
+
+        if(apiKey.isEmpty() || baseUrl.isEmpty()){
+            throw new RuntimeException("Invalid api host: " + baseUrl + " and api key: " + apiKey);
+        }
+
         this.client = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
                     Request request = chain.request()
@@ -21,7 +32,6 @@ public class API {
                     return chain.proceed(request);
                 })
                 .build();
-        this.baseUrl = baseUrl;
     }
 
     public CompletableFuture<String> getAsync(String endpoint) {

@@ -6,7 +6,7 @@ import icu.yogurt.chatreport.common.cache.UserCache;
 import icu.yogurt.chatreport.common.connector.RedisConnector;
 import icu.yogurt.chatreport.common.interfaces.IStorage;
 import icu.yogurt.chatreport.common.model.Message;
-import icu.yogurt.chatreport.common.model.UserModel;
+import icu.yogurt.chatreport.common.model.User;
 import lombok.SneakyThrows;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
@@ -29,11 +29,11 @@ public class RedisStorage implements IStorage {
         this.plugin = plugin;
         this.redisConnector = redisConnector;
         this.redisConnector.connect();
-        this.userCache = plugin.getUserCache();
+        this.userCache = plugin.getStorageManager().getUserCache();
 
     }
 
-    private synchronized RedisConnector getRedisConnector() {
+    private RedisConnector getRedisConnector() {
         return redisConnector;
     }
 
@@ -45,14 +45,14 @@ public class RedisStorage implements IStorage {
             return false;
         }
 
-        UserModel cachedUserModel = userCache.getCachedUserModel(player);
-        if (cachedUserModel != null) {
+        User cachedUser = userCache.getCachedUserModel(player);
+        if (cachedUser != null) {
             return true;
         }
 
-        UserModel userModel = plugin.getDatabase().getUserByUsername(player);
-        if (userModel != null) {
-            userCache.cacheUserModel(player, userModel);
+        User user = plugin.getDatabase().getUserByUsername(player);
+        if (user != null) {
+            userCache.cacheUserModel(player, user);
             return true;
         }
 
@@ -62,15 +62,15 @@ public class RedisStorage implements IStorage {
 
     @Override
     public String getUserUUID(String username) {
-        UserModel cachedUserModel = userCache.getCachedUserModel(username);
-        if (cachedUserModel != null) {
-            return cachedUserModel.getUuid();
+        User cachedUser = userCache.getCachedUserModel(username);
+        if (cachedUser != null) {
+            return cachedUser.getUuid();
         }
 
-        UserModel userModel = plugin.getDatabase().getUserByUsername(username);
-        if (userModel != null) {
-            userCache.cacheUserModel(username, userModel);
-            return userModel.getUuid();
+        User user = plugin.getDatabase().getUserByUsername(username);
+        if (user != null) {
+            userCache.cacheUserModel(username, user);
+            return user.getUuid();
         }
 
         return "0";

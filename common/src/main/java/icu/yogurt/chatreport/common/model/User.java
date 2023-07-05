@@ -7,7 +7,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class UserModel {
+public class User {
     private final String username;
     private final String uuid;
     private final String creationDate;

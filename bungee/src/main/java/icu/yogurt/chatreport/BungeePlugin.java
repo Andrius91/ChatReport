@@ -2,6 +2,7 @@ package icu.yogurt.chatreport;
 
 import icu.yogurt.chatreport.commands.BungeeCommand;
 import icu.yogurt.chatreport.common.BasePlugin;
+import icu.yogurt.chatreport.common.ConfigKeys;
 import icu.yogurt.chatreport.common.commands.ChatReportCommand;
 import icu.yogurt.chatreport.common.commands.ReportCommand;
 import icu.yogurt.chatreport.common.interfaces.IPlayer;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+
+import static icu.yogurt.chatreport.common.ConfigKeys.USE_REDIS_BUNGEE;
 
 public class BungeePlugin extends BasePlugin {
 
@@ -71,7 +74,7 @@ public class BungeePlugin extends BasePlugin {
 
     @Override
     protected void registerListeners(){
-        boolean SAVE_MESSAGES = getConfig().getBoolean("messages.save-messages");
+        boolean SAVE_MESSAGES = ConfigKeys.SAVE_MESSAGES.getAsBoolean();
 
         if(SAVE_MESSAGES){
             registerListener(new PlayerChatListener(this));
@@ -94,7 +97,8 @@ public class BungeePlugin extends BasePlugin {
 
     @Override
     public boolean isRedisBungeeAvailable(){
-        return ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null;
+        boolean usingRedisBungee = USE_REDIS_BUNGEE.getAsBoolean();
+        return ProxyServer.getInstance().getPluginManager().getPlugin("RedisBungee") != null && usingRedisBungee;
     }
 
 

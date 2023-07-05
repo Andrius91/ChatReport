@@ -2,6 +2,7 @@ package icu.yogurt.chatreport.impl;
 
 import icu.yogurt.chatreport.common.BasePlugin;
 import icu.yogurt.chatreport.common.MessageUtils;
+import icu.yogurt.chatreport.common.config.ConfigKey;
 import icu.yogurt.chatreport.common.interfaces.IPlayer;
 import net.kyori.adventure.audience.Audience;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -28,6 +29,15 @@ public class BungeePlayer implements IPlayer {
     @Override
     public void sendMessage(String message) {
         MessageUtils.sendMessage(this.audience, message);
+    }
+
+    @Override
+    public void sendMessage(ConfigKey<String> configKey){
+        String value = configKey.get();
+        if(value == null){
+            throw new IllegalArgumentException("Invalid string type");
+        }
+        MessageUtils.sendMessage(this.audience, value);
     }
 
     @Override

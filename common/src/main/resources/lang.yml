@@ -2,7 +2,7 @@ lang:
   correct-usage: "&cCorrect usage: %command_usage%"
   max-chars: "&cThe reason is too long"
   self-report: "&cYou cannot report yourself."
-  player-does-not-exist: "&cWe couldn't find the player in our database."
+  player-not-found: "&cWe couldn't find the player in our database."
   success-report: "&aYou have sent the report successfully."
   has-cooldown: "&cYou need to wait %time%s to use this command again."
   no-messages-found: "&cNo messages found for this player."

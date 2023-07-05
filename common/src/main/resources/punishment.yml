@@ -1,0 +1,29 @@
+punishment:
+  # Toggle for the auto-punishment task
+  auto-task: true
+  # Toggle for processing punishments on player join
+  auto-on-join: true
+  # Specify the punishment types for each event
+  types:
+    # Types to process when a player joins
+    on-join: ["MUTE", "WARN"]
+    # Types to process in the auto-punishment task
+    task: ["BAN", "UN_BAN"]
+  commands:
+    BAN:
+      with_report_id: "ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"
+      no_report_id: "ban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%"
+    UN_BAN:
+      default: "unban -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason%"
+    MUTE:
+      with_report_id: "mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id% %time%"
+      no_report_id: "mute -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% %time%"
+    WARN:
+      with_report_id: "warn -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason% ID:#%id%"
+      no_report_id: "warn -s %target% --sender=%staff% --sender-uuid=%staff_uuid% %reason%"
+
+  units:
+    DAYS: "d"
+    HOURS: "h"
+    MINUTES: "m"
+    SECONDS: "s"

@@ -10,15 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static icu.yogurt.chatreport.common.ConfigKeys.*;
+
 public class ReportCommand extends BaseCommand {
 
-    private final String HEADER;
-    private final String MAX_CHARS;
 
     public ReportCommand(BasePlugin plugin){
         super(plugin);
-        HEADER = plugin.getConfig().getString("report.header");
-        MAX_CHARS = plugin.getLangConfig().getString("lang.max-chars");
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ReportCommand extends BaseCommand {
     @Override
     protected void executeAsync(IPlayer sender, String[] args){
         if(args.length == 1){
-            sender.sendMessage(HEADER);
+            sender.sendMessage(REPORT_OPTION_HEADER);
             sender.sendMessage(reportOptions(target));
             return;
         }
@@ -48,7 +46,7 @@ public class ReportCommand extends BaseCommand {
         report.setServer(server);
         // Get all strings
         for (int i = 1; i < args.length; i++){
-            if(reason.length() > 36){
+            if(reason.length() > REPORT_MAX_REASON_CHARS.getAsInteger()){
                 sender.sendMessage(MAX_CHARS);
                 return;
             }
@@ -64,7 +62,7 @@ public class ReportCommand extends BaseCommand {
         // Cooldown
         cooldownManager.addPlayer(playerUuid);
 
-        plugin.sendReportToStaffs(report, true);
+        plugin.getReportService().createReport(report);
 
     }
 

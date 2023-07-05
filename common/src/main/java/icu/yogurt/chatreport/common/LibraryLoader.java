@@ -30,6 +30,16 @@ import java.io.File;
                 @Dependency(value = "net.kyori:adventure-platform-bungeecord:4.3.0", relocate = {
                         "net.kyori", "{package}.libs.net.kyori"
                 }),
+
+                // Hikari
+                @Dependency(value = "com.zaxxer:HikariCP:4.0.3" //,  relocate = {
+                        //"com.zaxxer", "{package}.libs.hikari"}
+                ),
+
+                // SQLite
+                @Dependency(value = "org.xerial:sqlite-jdbc:3.42.0.0",  relocate = {
+                        "org.xerial", "{package}.libs.sqlite"
+                })
         },
         relocations = {
                 // Jedis
